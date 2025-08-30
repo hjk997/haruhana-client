@@ -14,43 +14,35 @@
   <!-- 상단 메뉴 -->
   <header>
     <div class="header-left">Goal Tracker</div>
+    <div class="header-right">
+      <button id="add-btn" onclick="location.href='./add.html'">➕</button>
+      <button id="settings-btn">⚙️</button>
+    </div>
   </header>
 
-  <!-- 설정 페이지 -->
-  <div id="settings-page" class="page">
-    <header>
-      <h1>설정</h1>
-    </header>
-    <div class="settings-list">
-      <div class="setting-item">
-        <label>
-          <span>알림 켜기</span>
-          <input type="checkbox" checked>
-        </label>
-      </div>
-      <div class="setting-item">
-        <label for="theme-select">테마 모드</label>
-        <select id="theme-select">
-          <option value="light">라이트</option>
-          <option value="dark">다크</option>
-        </select>
-      </div>
-      <div class="setting-item">
-        <button id="reset-btn" class="btn">모든 달성표 초기화</button>
+  <div id="statistics-page" class="list-container">
+    <!-- 토글 버튼 -->
+    <div class="list-header">
+    </div>
+    <div class="list empty">
+      <div class="empty-message">
+        <span class="empty-icon">💦</span>
+        <span>준비중입니다...</span>
       </div>
     </div>
   </div>
+
   <!-- 하단 네비게이션 -->
   <nav class="bottom-nav">
     <button class="nav-item" onclick="location.href='./index.html'">
       <span>🏠</span>
       <span class="label">홈</span>
     </button>
-    <button class="nav-item" onclick="location.href='./statistics.html'">
+    <button class="nav-item active" onclick="()=>{}">
       <span>📊</span>
       <span class="label">통계</span>
     </button>
-    <button class="nav-item active" onclick="()=>{}">
+    <button class="nav-item" onclick="location.href='./setting.html'">
       <span>⚙️</span>
       <span class="label">설정</span>
     </button>
@@ -58,7 +50,7 @@
   
   <div class="alert-modal" id="alert-modal" style="display:none;">
     <div class="alert-content">
-        <p id="alert-message">팝업창 샘플.</p>
+        <p id="alert-message">팝업 예시.</p>
         <button id="alert-close" onclick="hideAlert()">확인</button>
     </div>
   </div>
@@ -73,6 +65,7 @@
         return;
       }
 
+      
     });
 
   </script>

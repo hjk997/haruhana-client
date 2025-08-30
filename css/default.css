@@ -415,3 +415,22 @@
     
     .btn { cursor: pointer; border: 1px solid #667085; background: transparent; color: black; padding: 8px 12px; border-radius: 10px; }
     .btn:hover { border-color: color-mix(in oklab, #ff7aa2, white 25%); }
+    
+    /* 스탬프-목록없음 화면 [S] */
+    .empty-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 18px;
+      height: 200px;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .empty-icon {
+      font-size: 32px;
+      margin-bottom: 4px;
+    }
+    /* 스탬프-목록없음 화면 [E] */
