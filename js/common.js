@@ -1,5 +1,6 @@
 const pages = {
   home: document.querySelector(".list-container"),
+  statistics: document.getElementById("statistics-page"),
   settings: document.getElementById("settings-page")
 };
 
@@ -13,7 +14,9 @@ navButtons.forEach((btn, index) => {
 
     // 페이지 전환
     Object.values(pages).forEach(p => p.style.display = "none");
-    if (index === 2) { // 설정 메뉴
+    if (index === 1) { // 통계 메뉴
+      pages.statistics.style.display = "block";
+    } else if (index === 2) { // 설정 메뉴
       pages.settings.style.display = "block";
     } else {
       pages.home.style.display = "block";
