@@ -58,20 +58,21 @@
         const loginFrm = document.getElementById("loginFrm");
         const formData = new FormData(loginFrm);
 
-        // You can iterate through the data
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-
-        // Or send it with fetch
+        // login 요청 
         fetch(ctx + '/login', {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data)
-          location.href = './index.html';
+          if (data && data.access_token) {
+            // JWT 토큰을 localStorage에 저장
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('token_type', data.token_type || 'bearer');
+            location.href = './index.html';
+          } else {
+            showAlert("로그인에 실패하였습니다.");
+          }
         })
         .catch(error => {
           console.error('Error:', error)
