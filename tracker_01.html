@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Tracker</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      background: #f8f8f8;
+      color: #333;
+    }
+
+    /* 상단 헤더 */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ff7aa2;
+      color: #fff;
+      padding: 0.8rem 1rem;
+      font-weight: bold;
+    }
+
+    .header-left {
+      font-size: 1.2rem;
+    }
+
+    .header-right button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.4rem;
+      margin-left: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* 목록 영역 */
+    .list {
+      padding: 1rem;
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+
+    .list-item {
+      position: relative; /* 드롭다운 기준 */
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .thumbnail {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      background: url("default-heart.png") center/cover no-repeat;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .info {
+      flex: 1;
+    }
+
+    .title {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+    }
+
+    .progress {
+      position: relative; /* progress-text 위치 기준 */
+      background: #eee;
+      height: 8px;
+      border-radius: 4px;
+      overflow: visible; /* 텍스트가 밖으로 나가도 보이도록 */
+      margin-top: 4px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 36%;
+      background: #ff7aa2;
+    }
+
+    .progress-text {
+      position: absolute;
+      top: -18px; /* progress bar 위쪽 */
+      right: 0;
+      font-size: 12px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #888;
+      margin-left: 0.5rem;
+    }
+
+    /* 드롭다운 메뉴 */
+    .dropdown {
+      position: absolute;
+      top: 100%;   /* 기본은 버튼 아래 */
+      right: 10px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      flex-direction: column;
+      min-width: 120px;
+      z-index: 10;
+    }
+
+    .dropdown button {
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    .dropdown button:hover {
+      background: #f5f5f5;
+    }
+
+    .list-item.show .dropdown {
+      display: flex;
+    }
+    
+    /* ✅ hover 이벤트 추가 */
+    .list-item:hover {
+      background: #f0f8ff; /* 살짝 하이라이트 */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+      border-top: 1px solid #ddd;
+      z-index: 100;
+    }
+
+    .bottom-nav .nav-item {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 14px;
+      cursor: pointer;
+      flex: 1;
+      height: 100%;
+      transition: color 0.2s;
+    }
+
+    .bottom-nav .nav-item span {
+      display: block;
+    }
+
+    .bottom-nav .nav-item.active {
+      color: #ff7aa2; /* 선택 강조 색 */
+    }
+
+    .bottom-nav .nav-item:hover {
+      color: #ff7aa2;
+    }
+
+    .page {
+    padding: 16px;
+    margin-bottom: 60px; /* 하단 네비게이션 때문에 */
+    }
+
+    .settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 14px;
+    }
+
+    .setting-item label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .setting-item select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fdfdfd;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .setting-item select:hover {
+      border-color: #ff7aa2;
+    }
+
+    .setting-item select:focus {
+      outline: none;
+      border-color: #ff7aa2;
+      box-shadow: 0 0 5px rgba(255,122,162,0.4);
+    }
+
+  .btn { cursor: pointer; border: 1px solid #667085; background: transparent; color: black; padding: 8px 12px; border-radius: 10px; }
+    .btn:hover { border-color: color-mix(in oklab, #ff7aa2, white 25%); }
+
+    .list-header {
+      padding: 1rem 0 0 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  margin-right: 8px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .slider {
+  background-color: #ff7aa2;
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+.toggle-label {
+  font-size: 14px;
+  color: #333;
+}
+.add-tracker-page {
+  padding: 16px;
+  margin-bottom: 60px; /* 하단 네비게이션 공간 확보 */
+}
+
+.add-tracker-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+/* 탭 헤더 */
+.tab-header {
+  display: flex;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 12px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab-btn.active {
+  border-bottom: 2px solid #ff7aa2;
+  color: #ff7aa2;
+}
+
+/* 스탬프 달성표 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 예: 5x5 */
+  gap: 8px;
+  justify-items: center;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background: url("default-heart.png") center/40px no-repeat;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cell.completed {
+  background: url("completed-heart.png") center/40px no-repeat;
+  border-color: #ff7aa2;
+  transform: scale(1.05);
+}
+/* 리스트 보기 */
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.record-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.record-item:hover {
+  background: #f9f9f9;
+}
+
+.record-item .thumbnail {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 6px;
+  background: url("default-stamp.png") center/cover no-repeat;
+  flex-shrink: 0;
+}
+
+.record-item .content {
+  flex: 1;
+}
+
+.record-item .title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.record-item .memo-text {
+  font-size: 0.9rem;
+  color: #555;
+  white-space: pre-line; /* 여러 줄 표시 */
+}
+
+/* 모달 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 400px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 20px;
+  color: #555;
+}
+
+
+  </style>
+</head>
+<body>
+
+  <!-- 상단 메뉴 -->
+  <header>
+    <div class="header-left">Goal Tracker</div>
+    <div class="header-right">
+      <button id="add-btn">➕</button>
+      <button id="settings-btn">⚙️</button>
+    </div>
+  </header>
+  
+
+  <div class="tracker-detail page">
+
+  <!-- 상단 탭 -->
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="stamp">스탬프 보기</button>
+    <button class="tab-btn" data-tab="list">리스트 보기</button>
+  </div>
+
+  <!-- 탭 콘텐츠 -->
+  <div class="tab-content" id="tab-stamp">
+    <h2>30일 달성표</h2>
+    <div class="grid" id="stamp-grid">
+      <!-- JS로 n*n 칸 생성 -->
+    </div>
+  </div>
+
+  <!-- 두 번째 탭: 리스트 보기 -->
+<div class="tab-content" id="tab-list" style="display:none;">
+  <h2>달성 기록</h2>
+  <div class="record-list"></div>
+</div>
+
+
+</div>
+
+<!-- 메모 수정 모달 -->
+<div id="memo-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>메모 수정</h3>
+      <span class="close-btn">&times;</span>
+    </div>
+    <textarea id="memo-input" rows="4" style="width:100%;"></textarea>
+    <button id="memo-save" style="margin-top:10px; padding:8px 12px; background:#ff7aa2; color:#fff; border:none; border-radius:6px; cursor:pointer;">
+      저장
+    </button>
+  </div>
+</div>
+  <!-- 하단 네비게이션 -->
+  <nav class="bottom-nav">
+    <button class="nav-item active">
+      <span>🏠</span>
+      <span class="label">홈</span>
+    </button>
+    <button class="nav-item">
+      <span>📊</span>
+      <span class="label">통계</span>
+    </button>
+    <button class="nav-item">
+      <span>⚙️</span>
+      <span class="label">설정</span>
+    </button>
+  </nav>
+
+  <script>
+// 탭 전환
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+
+    btn.classList.add("active");
+    const tabId = btn.dataset.tab;
+    document.getElementById("tab-" + tabId).style.display = "block";
+  });
+});
+
+// 스탬프 그리드 생성
+const grid = document.getElementById("stamp-grid");
+const total = 25; // 예: 5x5 = 25칸
+for (let i = 0; i < total; i++) {
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  cell.addEventListener("click", () => {
+    cell.classList.toggle("completed");
+  });
+  grid.appendChild(cell);
+}
+// ✅ 달성표 개수 (예: 30일)
+const totalDays = 30;
+const recordList = document.querySelector(".record-list");
+
+// 임시 데이터 저장소
+let records = Array.from({ length: totalDays }, (_, i) => {
+  const d = new Date();
+  d.setDate(d.getDate() - i);
+  return {
+    day: totalDays - i, // n일째
+    date: d.toISOString().split("T")[0],
+    memo: "",
+    stamp: "default-stamp.png"
+  };
+});
+
+// 리스트 렌더링
+function renderRecords() {
+  recordList.innerHTML = "";
+  records.forEach((r, i) => {
+    const div = document.createElement("div");
+    div.className = "record-item";
+    div.dataset.index = i;
+    div.innerHTML = `
+      <div class="thumbnail" style="background-image:url('${r.stamp}')"></div>
+      <div class="content">
+        <div class="title">${r.day}일째 (${r.date})</div>
+        <div class="memo-text">${r.memo || "메모 없음"}</div>
+      </div>
+    `;
+    recordList.appendChild(div);
+  });
+}
+
+renderRecords();
+
+// 메모 모달 관련
+const modal = document.getElementById("memo-modal");
+const memoInput = document.getElementById("memo-input");
+const saveBtn = document.getElementById("memo-save");
+let currentIndex = null;
+
+recordList.addEventListener("click", (e) => {
+  const item = e.target.closest(".record-item");
+  if (!item) return;
+
+  currentIndex = item.dataset.index;
+  memoInput.value = records[currentIndex].memo;
+  modal.style.display = "block";
+});
+
+// 모달 닫기
+document.querySelector(".close-btn").addEventListener("click", () => {
+  modal.style.display = "none";
+});
+
+// 메모 저장
+saveBtn.addEventListener("click", () => {
+  if (currentIndex !== null) {
+    records[currentIndex].memo = memoInput.value;
+    renderRecords();
+    modal.style.display = "none";
+  }
+});
+
+
+
+  </script>
+
+</body>
+</html>

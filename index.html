@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Tracker</title>
+  <link rel="stylesheet" href="/toy_front/css/default.css">
+  <link rel="stylesheet" href="/toy_front/js/common.js">
+</head>
+<body>
+
+  <!-- 상단 메뉴 -->
+  <header>
+    <div class="header-left">Goal Tracker</div>
+    <div class="header-right">
+      <button id="add-btn" onclick="location.href='/toy_front/add.html'">➕</button>
+      <button id="settings-btn">⚙️</button>
+    </div>
+  </header>
+  <!-- 토글 버튼 -->
+  <div class="list-header">
+    <label class="toggle-switch">
+      <input type="checkbox" id="filter-toggle">
+      <span class="slider"></span>
+    </label>
+    <span class="toggle-label">완료만 보기</span>
+  </div>
+  <!-- 달성표 목록 -->
+  <div class="list">
+    <div class="list-item">
+      <div class="thumbnail"></div>
+      <div class="info">
+        <div class="title">7일 달성표</div>
+        <div class="progress">
+          <div class="progress-bar" style="width: 30%;"></div>
+          <span class="progress-text">30/100</span>
+        </div>
+      </div>
+      <button class="menu-btn">⋮</button>
+      <div class="dropdown">
+        <button>편집</button>
+        <button>삭제</button>
+        <button>공유</button>
+      </div>
+    </div>
+
+    <div class="list-item">
+      <div class="thumbnail" style="background-image:url('default-star.png');"></div>
+      <div class="info">
+        <div class="title">30일 달성표</div>
+        <div class="progress">
+          <div class="progress-bar" style="width: 70%;"></div>
+          <span class="progress-text">70/100</span>
+        </div>
+      </div>
+      <button class="menu-btn">⋮</button>
+      <div class="dropdown">
+        <button>편집</button>
+        <button>삭제</button>
+        <button>공유</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 설정 페이지 -->
+<div id="settings-page" class="page" style="display:none;">
+  <header>
+    <h1>설정</h1>
+  </header>
+  <div class="settings-list">
+    <div class="setting-item">
+      <label>
+        <span>알림 켜기</span>
+        <input type="checkbox" checked>
+      </label>
+    </div>
+    <div class="setting-item">
+      <label for="theme-select">테마 모드</label>
+      <select id="theme-select">
+        <option value="light">라이트</option>
+        <option value="dark">다크</option>
+      </select>
+    </div>
+    <div class="setting-item">
+      <button id="reset-btn" class="btn">모든 달성표 초기화</button>
+    </div>
+  </div>
+</div>
+  <!-- 하단 네비게이션 -->
+  <nav class="bottom-nav">
+    <button class="nav-item active">
+      <span>🏠</span>
+      <span class="label">홈</span>
+    </button>
+    <button class="nav-item">
+      <span>📊</span>
+      <span class="label">통계</span>
+    </button>
+    <button class="nav-item">
+      <span>⚙️</span>
+      <span class="label">설정</span>
+    </button>
+  </nav>
+
+  <script>
+    document.querySelectorAll(".menu-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const item = e.target.closest(".list-item");
+    const dropdown = item.querySelector(".dropdown");
+
+    // 다른 드롭다운 닫기
+    document.querySelectorAll(".list-item").forEach(i => {
+      if (i !== item) i.classList.remove("show");
+    });
+
+    // 현재 토글
+    item.classList.toggle("show");
+
+    if (item.classList.contains("show")) {
+      // 위치 계산
+      const rect = dropdown.getBoundingClientRect();
+      if (rect.bottom > window.innerHeight) {
+        dropdown.style.top = "auto";
+        dropdown.style.bottom = "100%"; // 위로 열림
+      } else {
+        dropdown.style.top = "100%";
+        dropdown.style.bottom = "auto"; // 아래로 열림
+      }
+    }
+  });
+});
+
+// 바깥 클릭 시 닫기
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".list-item")) {
+    document.querySelectorAll(".list-item").forEach(i => i.classList.remove("show"));
+  }
+});
+
+const pages = {
+  home: document.querySelector(".list"),
+  settings: document.getElementById("settings-page")
+};
+
+const navButtons = document.querySelectorAll(".bottom-nav .nav-item");
+
+navButtons.forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    // active 클래스 갱신
+    navButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // 페이지 전환
+    Object.values(pages).forEach(p => p.style.display = "none");
+    if (index === 2) { // 설정 메뉴
+      pages.settings.style.display = "block";
+    } else {
+      pages.home.style.display = "block";
+    }
+  });
+});
+
+  </script>
+
+</body>
+</html>

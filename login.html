@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Tracker</title>
+  <link rel="stylesheet" href="./css/default.css">
+  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
+</head>
+<body>
+
+  <!-- 상단 메뉴 -->
+  <header>
+    <div class="header-left">Goal Tracker</div>
+    <div class="header-right">
+    </div>
+  </header>
+  
+  <div class="login-card-wrapper">
+    <div class="login-card">
+        <h2>로그인</h2>
+        <form id="loginFrm" name="loginFrm" method="POST">
+            <input type="text" id="username" name="username" placeholder="아이디" />
+            <input type="password" id="password" name="password" placeholder="비밀번호" />
+        </form>
+            <button id="loginBtn">확인</button>
+        <div class="links">
+        <a href="#">회원가입</a>
+        <a href="#">아이디 / 비밀번호 찾기</a>
+        </div>
+    </div>
+  </div>
+
+<div class="alert-modal" id="alert-modal" style="display:none;">
+<div class="alert-content">
+    <p id="alert-message">비밀번호가 틀렸습니다.</p>
+    <button id="alert-close">확인</button>
+</div>
+</div>
+
+  <script>
+    function showAlert(message) {
+    const modal = document.getElementById("alert-modal");
+    const msg = document.getElementById("alert-message");
+    msg.textContent = message;
+    modal.style.display = "flex";
+    }
+
+    document.getElementById("alert-close").addEventListener("click", () => {
+        document.getElementById("alert-modal").style.display = "none";
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        const userNm = document.getElementById("username").value;
+        const userPw = document.getElementById("password").value;
+
+        if(userNm === undefined || userNm === '') {
+            showAlert("아이디를 입력해주세요.");
+            return;
+        }
+        if(userPw === undefined || userPw === ''){
+            showAlert("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        // 메인 화면으로 이동 
+        const loginFrm = document.getElementById("loginFrm");
+        const formData = new FormData(loginFrm);
+
+        // You can iterate through the data
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+
+        // Or send it with fetch
+        fetch(ctx + '/login', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          location.href('/index.html');
+        })
+        .catch(error => {
+          console.error('Error:', error)
+            showAlert("로그인에 실패하였습니다.");
+        });
+        
+    });
+
+  </script>
+
+</body>
+</html>
