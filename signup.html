@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Tracker</title>
+  <link rel="stylesheet" href="./css/default.css">
+  <script type="text/javascript" src="./js/common.js"></script>
+  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
+  <style>
+.add-tracker-page {
+  padding: 16px;
+  margin-bottom: 60px; /* 하단 네비게이션 공간 확보 */
+}
+
+.add-tracker-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-item label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-item input[type="text"],
+.form-item input[type="number"],
+.form-item input[type="password"],
+.form-item input[type="button"]  {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-item input[type="text"]:focus,
+.form-item input[type="number"]:focus {
+  border-color: #ff7aa2;
+  box-shadow: 0 0 5px rgba(255,122,162,0.3);
+}
+
+.add-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff7aa2;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-btn:hover {
+  background-color: #ff6090;
+}
+
+/* 닫기 버튼 */
+.close-btn {
+  align-self: flex-end;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/** 이용약관 관련 textarea [S] */
+.terms-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  .terms-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #555;
+    background: #f8f8f8;
+    resize: none;
+    margin-bottom: 4px;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+/** 이용약관 관련 textarea [S] */
+/** 이용약관 관련 체크박스 [S] */
+  .center-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: #333;
+    font-weight: 400;
+    margin: 0;
+  }
+  .center-label input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+  }
+  /** 이용약관 관련 체크박스 [E] */
+  /* 입력 오류 메시지 [S] */
+  .input-error {
+    display: flex;
+    align-items: center;
+    color: #ff4d4f;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-left: 4px;
+    min-height: 20px;
+    gap: 4px;
+  }
+  .error-icon {
+    font-size: 15px;
+    margin-right: 2px;
+    line-height: 1;
+  }
+  /* 입력 오류 메시지 [E] */
+  </style>
+</head>
+<body>
+
+  <!-- 상단 메뉴 -->
+  <header>
+    <div class="header-left">하루하나</div>
+    <div class="header-right">
+    </div>
+  </header>
+  <div class="add-tracker-page page">
+  <h2>회원가입</h2>
+
+  <div class="form-item">
+    <label for="user_id">ID</label>
+    <input type="text" id="user_id" id="user_name" placeholder="4~30자리 영문대소문자,숫자">
+    <div class="input-error" id="user_id_error" style="display:none;">
+      <span class="error-icon">&#9888;</span>
+      사용할 수 없는 ID입니다.
+    </div>
+  </div>
+
+  <div class="form-item">
+    <label for="user_name">닉네임</label>
+    <input type="text" id="user_name" name="user_name" placeholder="4~30자리 영문대소문자,숫자">
+    <div class="input-error" id="user_name_error" style="display:none;">
+      <span class="error-icon">&#9888;</span>
+      사용할 수 없는 닉네임입니다.
+    </div>
+  </div>
+
+  <div class="form-item">
+    <label for="user_pw">비밀번호</label>
+    <input type="password" id="user_pw" placeholder="4~30자리 영문대소문자,숫자,특수기호">
+  </div>
+
+  <div class="form-item">
+    <label for="user_pw_confirm">비밀번호 확인</label>
+    <input type="password" id="user_pw_confirm" placeholder="비밀번호 재입력">
+    <div class="input-error" id="user_pw_confirm_error" style="display:none;">
+      <span class="error-icon">&#9888;</span>
+      비밀번호가 동일하지 않습니다.
+    </div>
+  </div>
+
+  <div class="form-item">
+    <label for="user_email">이메일</label>
+    <input type="text" id="user_email" name="user_email" placeholder="">
+    <div class="input-error" id="user_email_error" style="display:none;">
+      <span class="error-icon">&#9888;</span>
+      올바른 이메일 형식이 아닙니다.
+    </div>
+  </div>
+
+  <div class="form-item terms-item">
+    <textarea id="terms" class="terms-textarea" rows="6" readonly>
+여기에 이용약관 내용을 입력하세요.
+(예시) 본 서비스는 ...
+    </textarea>
+    <label class="terms-label center-label">
+      <input type="checkbox" id="terms_agree" style="accent-color:#ff7aa2;"> 이용약관에 동의합니다.
+    </label>
+  </div>
+
+  <button id="signUpBtn" class="add-btn">회원가입</button>
+</div>
+
+
+<div class="alert-modal" id="alert-modal" style="display:none;">
+<div class="alert-content">
+    <p id="alert-message">비밀번호가 틀렸습니다.</p>
+    <button id="alert-close" onclick="hideAlert()">확인</button>
+</div>
+  <script>
+
+    document.getElementById("signUpBtn").addEventListener("click", () => {
+        const userId = document.getElementById("user_id").value;
+        const userName = document.getElementById("user_name").value;
+        const userPw = document.getElementById("user_pw").value;
+        const userEmail = document.getElementById("user_email").value;
+
+        // 1. 입력값 공백 여부 체크 
+        if(userId === undefined || userId === '') {
+            document.getElementById("user_id_error").style.display = "flex";
+            return;
+        } else {
+            document.getElementById("user_id_error").style.display = "none";
+        }
+
+        if(userName === undefined || userName === '') {
+            document.getElementById("user_name_error").style.display = "flex";
+            return;
+        } else {
+            document.getElementById("user_name_error").style.display = "none";
+        }
+
+        if(userPw === undefined || userPw === '') {
+            showAlert("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        if(userEmail === undefined || userEmail === '') {
+            document.getElementById("user_email_error").style.display = "flex";
+            return;
+        } else {
+            document.getElementById("user_email_error").style.display = "none";
+        }
+
+        // 2. 비밀번호 일치 여부 체크
+        if(userPw !== document.getElementById("user_pw_confirm").value) {
+            document.getElementById("user_pw_confirm_error").style.display = "flex";
+            return;
+        } else {
+            document.getElementById("user_pw_confirm_error").style.display = "none";
+        }
+
+        // 3. 이용약관 동의 체크
+        if(!document.getElementById("terms_agree").checked) {
+            showAlert("이용약관에 동의해주세요.");
+            return;
+        }
+
+        // 4. 회원가입 API 호출 
+        fetch(ctx + '/signup', {
+            method: 'POST',
+            body: JSON.stringify({
+                user_id: userId,
+                user_nm: userName,
+                user_pw: userPw,
+                user_email: userEmail
+            }),
+            headers: {
+                "Content-Type": "application/json; charset=UTF-8",
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            showAlert("회원가입에 성공하였습니다. 메인화면으로 돌아가서 다시 로그인해주세요.");
+            location.href = './login.html';
+        })
+        .catch(error => {
+            console.error('Error:', error)
+            //TODO: error code
+            showAlert("로그인에 실패하였습니다. 관리자에게 에러코드를 문의해주세요. 에러코드: "); 
+        });
+    });
+
+  </script>
+
+</body>
+</html>
