@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goal Tracker</title>
   <link rel="stylesheet" href="./css/default.css">
-  <link rel="stylesheet" href="./js/common.js">
+  <script type="text/javascript" src="./js/common.js"></script>
   <script type="text/javascript" src="./js/profile/properties.local.js"></script>
   <style>
     /* ...existing code... */
@@ -132,7 +132,13 @@
       <span class="label">설정</span>
     </button>
   </nav>
-
+  
+  <div class="alert-modal" id="alert-modal" style="display:none;">
+    <div class="alert-content">
+        <p id="alert-message">비밀번호가 틀렸습니다.</p>
+        <button id="alert-close" onclick="hideAlert()">확인</button>
+    </div>
+  </div>
   <script>
     // document.ready 
     document.addEventListener('DOMContentLoaded', function () {
@@ -156,8 +162,10 @@
           drawStampList(data);
         })
         .catch(error => {
-          console.error('Error:', error)
-            showAlert("스탬프 목록을 불러오기 실패하였습니다.");
+          console.error('Error:', error);
+          showAlert("스탬프 목록을 불러오기 실패하였습니다. 다시 로그인해주세요.");
+          location.href = './login.html';
+          return;
         });
       
     });
@@ -195,29 +203,6 @@
       if (!e.target.closest(".list-item")) {
         document.querySelectorAll(".list-item").forEach(i => i.classList.remove("show"));
       }
-    });
-
-    const pages = {
-      home: document.querySelector(".list-container"),
-      settings: document.getElementById("settings-page")
-    };
-
-    const navButtons = document.querySelectorAll(".bottom-nav .nav-item");
-
-    navButtons.forEach((btn, index) => {
-      btn.addEventListener("click", () => {
-        // active 클래스 갱신
-        navButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        // 페이지 전환
-        Object.values(pages).forEach(p => p.style.display = "none");
-        if (index === 2) { // 설정 메뉴
-          pages.settings.style.display = "block";
-        } else {
-          pages.home.style.display = "block";
-        }
-      });
     });
 
     function drawStampList(data){

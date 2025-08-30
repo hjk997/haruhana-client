@@ -1,5 +1,5 @@
 const pages = {
-  home: document.querySelector(".list"),
+  home: document.querySelector(".list-container"),
   settings: document.getElementById("settings-page")
 };
 
