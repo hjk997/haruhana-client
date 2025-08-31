@@ -2,7 +2,7 @@
 name: Bug report
 about: 버그를 발견했을 때 사용하세요
 title: "[bug]"
-labels: bug
+labels: bug, feature, first
 assignees: ''
 
 ---
