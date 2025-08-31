@@ -42,6 +42,18 @@
   </div>
 
   <script>
+    // 엔터 키 이벤트
+    document.getElementById("password").onkeypress = function (e) {
+      if (!e) e = window.event;
+      const keyCode = e.keyCode || e.which;
+      if (keyCode == '13') {
+        e.preventDefault();
+        document.getElementById("loginBtn").click();
+        return false;
+      }
+    };
+    
+    // 로그인 버튼 클릭 이벤트
     document.getElementById("loginBtn").addEventListener("click", (e) => {
       e.preventDefault();
       const userNm = document.getElementById("username").value;
@@ -80,7 +92,6 @@
           console.error('Error:', error)
           showAlert("로그인에 실패하였습니다.");
         });
-
     });
 
   </script>
