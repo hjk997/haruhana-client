@@ -36,114 +36,6 @@
       cursor: pointer;
     }
 
-    /* 목록 영역 */
-    .list {
-      padding: 1rem;
-      max-height: calc(100vh - 60px);
-      overflow-y: auto;
-    }
-
-    .list-item {
-      position: relative; /* 드롭다운 기준 */
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .thumbnail {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      background: url("default-heart.png") center/cover no-repeat;
-      margin-right: 1rem;
-      flex-shrink: 0;
-    }
-
-    .info {
-      flex: 1;
-    }
-
-    .title {
-      font-weight: bold;
-      margin-bottom: 0.3rem;
-    }
-
-    .progress {
-      position: relative; /* progress-text 위치 기준 */
-      background: #eee;
-      height: 8px;
-      border-radius: 4px;
-      overflow: visible; /* 텍스트가 밖으로 나가도 보이도록 */
-      margin-top: 4px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 36%;
-      background: #ff7aa2;
-    }
-
-    .progress-text {
-      position: absolute;
-      top: -18px; /* progress bar 위쪽 */
-      right: 0;
-      font-size: 12px;
-      color: #888;
-      font-weight: 500;
-    }
-
-    .menu-btn {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #888;
-      margin-left: 0.5rem;
-    }
-
-    /* 드롭다운 메뉴 */
-    .dropdown {
-      position: absolute;
-      top: 100%;   /* 기본은 버튼 아래 */
-      right: 10px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: none;
-      flex-direction: column;
-      min-width: 120px;
-      z-index: 10;
-    }
-
-    .dropdown button {
-      background: none;
-      border: none;
-      text-align: left;
-      padding: 0.7rem 1rem;
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: #333;
-    }
-
-    .dropdown button:hover {
-      background: #f5f5f5;
-    }
-
-    .list-item.show .dropdown {
-      display: flex;
-    }
-    
-    /* ✅ hover 이벤트 추가 */
-    .list-item:hover {
-      background: #f0f8ff; /* 살짝 하이라이트 */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
-    }
-
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -186,120 +78,6 @@
       color: #ff7aa2;
     }
 
-    .page {
-    padding: 16px;
-    margin-bottom: 60px; /* 하단 네비게이션 때문에 */
-    }
-
-    .settings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 16px;
-    }
-
-    .setting-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-      border-radius: 8px;
-      padding: 12px 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      font-size: 14px;
-    }
-
-    .setting-item label {
-      font-weight: 500;
-      color: #333;
-    }
-
-    .setting-item select {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background: #fdfdfd;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .setting-item select:hover {
-      border-color: #ff7aa2;
-    }
-
-    .setting-item select:focus {
-      outline: none;
-      border-color: #ff7aa2;
-      box-shadow: 0 0 5px rgba(255,122,162,0.4);
-    }
-
-  .btn { cursor: pointer; border: 1px solid #667085; background: transparent; color: black; padding: 8px 12px; border-radius: 10px; }
-    .btn:hover { border-color: color-mix(in oklab, #ff7aa2, white 25%); }
-
-    .list-header {
-      padding: 1rem 0 0 1rem;
-  display: flex;
-  align-items: center;
-}
-
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 22px;
-  margin-right: 8px;
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  border-radius: 12px;
-  transition: 0.3s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-
-input:checked + .slider {
-  background-color: #ff7aa2;
-}
-
-input:checked + .slider:before {
-  transform: translateX(18px);
-}
-
-.toggle-label {
-  font-size: 14px;
-  color: #333;
-}
-.add-tracker-page {
-  padding: 16px;
-  margin-bottom: 60px; /* 하단 네비게이션 공간 확보 */
-}
-
-.add-tracker-page h2 {
-  font-size: 1.5rem;
-  margin-bottom: 16px;
-}
-
 /* 탭 헤더 */
 .tab-header {
   display: flex;
@@ -324,12 +102,12 @@ input:checked + .slider:before {
   color: #ff7aa2;
 }
 
-/* 스탬프 달성표 */
 .grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 예: 5x5 */
-  gap: 8px;
-  justify-items: center;
+  grid-template-columns: repeat(5, 60px); /* 5열, 60px 고정 */
+  grid-auto-rows: 60px;                   /* 행 높이 고정 */
+  gap: 8px;                               /* 동일 간격 */
+  justify-content: center;
 }
 
 .cell {
@@ -337,13 +115,13 @@ input:checked + .slider:before {
   height: 60px;
   border: 2px solid #ccc;
   border-radius: 10px;
-  background: url("default-heart.png") center/40px no-repeat;
+  background: url("./img/default-heart.png") center/40px no-repeat;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 .cell.completed {
-  background: url("completed-heart.png") center/40px no-repeat;
+  background: url("./img/completed-heart.png") center/40px no-repeat;
   border-color: #ff7aa2;
   transform: scale(1.05);
 }
@@ -432,13 +210,8 @@ input:checked + .slider:before {
   <!-- 상단 메뉴 -->
   <header>
     <div class="header-left">Goal Tracker</div>
-    <div class="header-right">
-      <button id="add-btn">➕</button>
-      <button id="settings-btn">⚙️</button>
-    </div>
   </header>
   
-
   <div class="tracker-detail page">
 
   <!-- 상단 탭 -->
@@ -581,8 +354,6 @@ saveBtn.addEventListener("click", () => {
     modal.style.display = "none";
   }
 });
-
-
 
   </script>
 
