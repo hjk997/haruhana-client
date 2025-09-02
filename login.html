@@ -73,7 +73,7 @@
       const formData = new FormData(loginFrm);
 
       // login 요청 
-      fetch(ctx + '/login', {
+      fetch(`${ctx}/login`, {
         method: 'POST',
         body: formData
       })

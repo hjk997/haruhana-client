@@ -106,13 +106,9 @@
         return;
       }
 
-      fetch(ctx + '/stamp', {
-            method: 'GET',
-            headers: {
-              'Authorization': 'Bearer ' + token
-            }
+      apiFetch(`${ctx}/stamp`, {
+            method: 'GET'
         })
-        .then(response => response.json())
         .then(data => {
           console.log(data);
           drawStampList(data);
