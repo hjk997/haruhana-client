@@ -31,40 +31,8 @@
     </div>
     <!-- 달성표 목록 -->
     <div class="list">
-      <div class="list-item">
-        <div class="thumbnail"></div>
-        <div class="info">
-          <div class="title">7일 달성표</div>
-          <div class="progress">
-            <div class="progress-bar" style="width: 30%;"></div>
-            <span class="progress-text">30/100</span>
-          </div>
-        </div>
-        <button class="menu-btn">⋮</button>
-        <div class="dropdown">
-          <button>편집</button>
-          <button>삭제</button>
-          <button>공유</button>
-        </div>
-      </div>
-
-      <div class="list-item">
-        <div class="thumbnail" style="background-image:url('default-star.png');"></div>
-        <div class="info">
-          <div class="title">30일 달성표</div>
-          <div class="progress">
-            <div class="progress-bar" style="width: 70%;"></div>
-            <span class="progress-text">70/100</span>
-          </div>
-        </div>
-        <button class="menu-btn">⋮</button>
-        <div class="dropdown">
-          <button>편집</button>
-          <button>삭제</button>
-          <button>공유</button>
-        </div>
-      </div>
     </div>
+    <!-- 달성표 목록 없을 때 -->
     <div class="list empty" style="display:none;">
       <div class="empty-message">
         <span class="empty-icon">📄</span>
@@ -115,8 +83,9 @@
         })
         .catch(error => {
           console.error('Error:', error);
-          showAlert("스탬프 목록을 불러오기 실패하였습니다. 다시 로그인해주세요.");
-          location.href = './login.html';
+          showAlert("스탬프 목록을 불러오기 실패하였습니다. 다시 로그인해주세요.", () =>{
+            location.href = './login.html';
+          });
           return;
         });
       
@@ -173,9 +142,33 @@
         listContainer.style.display = "block";
       }
 
+      let html = '';
       data.forEach(stamp => {
-        // TODO: data에 맞게 수정
+        const percent = Math.floor(stamp.progress_cnt / stamp.total_cnt * 100);
+        html = `
+          <div class="list-item">
+            <div class="thumbnail"></div>
+            <div class="info">
+              <div class="title">${stamp.stamp_nm}</div>
+              <div class="progress">
+                <div class="progress-bar" style="width: ${percent}%;"></div>
+                <span class="progress-text">${stamp.progress_cnt}/${stamp.total_cnt}</span>
+              </div>
+            </div>
+            <button class="menu-btn">⋮</button>
+            <div class="dropdown">
+              <button>편집</button>
+              <button>삭제</button>
+              <button>공유</button>
+            </div>
+          </div>
+        `;
+        listContainer.insertAdjacentHTML('beforeend', html);
+
+        const lastItem = listContainer.lastElementChild;
+        lastItem.querySelector(".thumbnail").style.backgroundImage = `url(${stamp.image_url})`;
       });
+      //listContainer.innerHTML = html;
     }
 
   </script>

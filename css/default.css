@@ -173,13 +173,31 @@
       margin-bottom: 1rem;
     }
 
-    .thumbnail {
+    .list .thumbnail {
       width: 60px;
       height: 60px;
       border-radius: 8px;
-      background: url("default-heart.png") center/cover no-repeat;
       margin-right: 1rem;
       flex-shrink: 0;
+      background-color: #f0f0f0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: inline-block;
+    }
+
+    .form-item .thumbnail {
+      width: 120px;
+      height: 120px;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-top: 10px;
+      background-size: cover;
+      background-position: center;
     }
 
     .info {
