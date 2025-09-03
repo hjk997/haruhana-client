@@ -82,6 +82,7 @@
           if (data && data.access_token) {
             // JWT 토큰을 localStorage에 저장
             localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
             localStorage.setItem('token_type', data.token_type || 'bearer');
             location.href = './index.html';
           } else {
