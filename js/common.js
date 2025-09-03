@@ -48,10 +48,12 @@ async function apiFetch(url, optionsParam = {}) {
 
       if(json.code && json.code === 401) {
         const refresh = localStorage.getItem("refresh_token");
+        const refreshFormData = new FormData();
+        refreshFormData.append("refresh_token", refresh);
+        
         const refreshRes = await fetch(`${ctx}/login/refresh`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refresh_token: refresh })
+          body: refreshFormData
         });
 
         if (refreshRes.ok) {
