@@ -1,289 +1,507 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goal Tracker</title>
   <link rel="stylesheet" href="./css/default.css">
+  <script type="text/javascript" src="./js/common.js"></script>
+  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
   <style>
-.add-tracker-page {
-  padding: 16px;
-  margin-bottom: 60px; /* 하단 네비게이션 공간 확보 */
-}
+    .add-stamp-page {
+      padding: 16px;
+      margin-bottom: 60px;
+      /* 하단 네비게이션 공간 확보 */
+    }
 
-.add-tracker-page h2 {
-  font-size: 1.5rem;
-  margin-bottom: 16px;
-}
+    .add-stamp-page h2 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
 
-.form-item {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-}
+    .form-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
 
-.form-item label {
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #333;
-}
+    .form-item label {
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+    }
 
-.form-item input[type="text"],
-.form-item input[type="number"],
-.form-item input[type="file"],
-.form-item input[type="button"]  {
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.2s;
-}
+    .form-item input[type="text"],
+    .form-item input[type="number"],
+    .form-item input[type="file"],
+    .form-item input[type="button"] {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
 
-.form-item input[type="text"]:focus,
-.form-item input[type="number"]:focus {
-  border-color: #ff7aa2;
-  box-shadow: 0 0 5px rgba(255,122,162,0.3);
-}
+    .form-item input[type="text"]:focus,
+    .form-item input[type="number"]:focus {
+      border-color: #ff7aa2;
+      box-shadow: 0 0 5px rgba(255, 122, 162, 0.3);
+    }
 
-#add-tracker-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background-color: #ff7aa2;
-  color: #fff;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
+    .form-item select {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      background: #fff;
+      margin-bottom: 0;
+    }
 
-#add-tracker-btn:hover {
-  background-color: #ff6090;
-}
+    .form-item select:focus {
+      border-color: #ff7aa2;
+      box-shadow: 0 0 5px rgba(255, 122, 162, 0.3);
+    }
 
-/* 모달 배경 */
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 1000; 
-  left: 0; top: 0; 
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.5); 
-  justify-content: center; 
-  align-items: center;
-}
+    #add-stamp-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff7aa2;
+      color: #fff;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-/* 모달 콘텐츠 */
-.modal-content {
-  background: #fff;
-  padding: 16px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 400px;
-  max-height: 80%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+    #add-stamp-btn:hover {
+      background-color: #ff6090;
+    }
 
-/* 닫기 버튼 */
-.close-btn {
-  align-self: flex-end;
-  cursor: pointer;
-  font-size: 20px;
-}
+    /* 모달 배경 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
 
-/* 이미지 그리드 */
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
+    /* 모달 콘텐츠 */
+    .modal-content {
+      background: #fff;
+      padding: 16px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      max-height: 80%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-/* 이미지 아이템 */
-.image-item {
-  width: 100%;
-  padding-top: 100%; /* 정사각형 유지 */
-  position: relative;
-  background: #f0f0f0;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-}
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
 
-.image-item img {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
+    .modal-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+    }
 
-/* 업로드 버튼 스타일 */
-.upload-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  color: #555;
-  background: #e0e0e0;
-  font-weight: bold;
-}
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
 
-.modal-header h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
+    /* 닫기 버튼 */
+    .close-btn {
+      margin-left: 12px;
+      font-size: 20px;
+      cursor: pointer;
+    }
 
-.close-btn {
-  cursor: pointer;
-  font-size: 20px;
-  color: #555;
-}
+    /* 이미지 그리드 */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    /* 이미지 아이템 */
+    .image-item {
+      width: 100%;
+      padding-top: 100%;
+      /* 정사각형 유지 */
+      position: relative;
+      background: #f0f0f0;
+      border-radius: 8px;
+      border: 8px solid #f0f0f0;
+      overflow: hidden;
+      cursor: pointer;
+      margin: 2px;
+    }
+
+    .image-item img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* 업로드 버튼 스타일 */
+    .upload-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      color: #555;
+      background: #e0e0e0;
+      font-weight: bold;
+    }
+
+    /* 모달 버튼(헤더) 스타일 [S]*/
+    .modal-btn {
+      padding: 6px 14px;
+      border: none; 
+      border-radius: 6px;
+      background: #ffffff;
+      color: #333;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .modal-btn:hover {
+      background: #ff7aa2;
+      color: #fff;
+    }
+    /* 모달 버튼(헤더) 스타일 [E]*/
+
+    .desc-textarea {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      resize: none;
+      font-family: inherit;
+    }
+
+    .desc-textarea:focus {
+      border-color: #ff7aa2;
+      box-shadow: 0 0 5px rgba(255, 122, 162, 0.3);
+    }
+
+    /* 로딩바 [S] */
+    .image-grid-loading {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #eee;
+      border-top: 4px solid #ff7aa2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    /* 로딩바 [E] */
   </style>
 </head>
+
 <body>
 
   <!-- 상단 메뉴 -->
   <header>
-    <div class="header-left">Goal Tracker</div>
-    <div class="header-right">
-      <button id="add-btn">➕</button>
-      <button id="settings-btn">⚙️</button>
-    </div>
+    <div class="header-left">Goal stamp</div>
   </header>
-  <div class="add-tracker-page page">
-  <h2>새 달성표 추가</h2>
+  <div class="add-stamp-page page">
+    <h2>새 달성표 추가</h2>
 
-  <div class="form-item">
-    <label for="tracker-name">달성표명</label>
-    <input type="text" id="tracker-name" placeholder="예: 7일 달성표">
-  </div>
-
-  <div class="form-item">
-    <label for="tracker-count">개수</label>
-    <input type="number" id="tracker-count" placeholder="숫자만 입력">
-  </div>
-
-<div class="form-item">
-  <label for="tracker-image-before">이미지 등록 (달성 후)</label>
-    <!-- 이미지 등록 버튼 -->
-    <input type="button" id="open-image-modal" value="이미지 선택">
-</div>
-
-<div class="form-item">
-  <label for="tracker-image-after">이미지 등록 (달성 후)</label>
-  <input type="file" id="tracker-image-after" accept="image/*">
-</div>
-
-  <button id="add-tracker-btn" href="/tracker_01.html">추가</button>
-</div>
-
-<!-- 이미지 모달 -->
-<div id="image-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>이미지 선택</h3>
-      <span class="close-btn">&times;</span>
+    <div class="form-item">
+      <label for="stamp-name">달성표명</label>
+      <input type="text" id="stamp-name" name="stamp_nm" placeholder="예: 7일 달성표">
     </div>
-    <div class="image-grid">
-      <div class="image-item upload-item">직접 업로드하기</div>
-      <div class="image-item"><img src="image1.png" alt=""></div>
-      <div class="image-item"><img src="image2.png" alt=""></div>
-      <div class="image-item"><img src="image3.png" alt=""></div>
-      <!-- 필요에 따라 더 추가 -->
+
+    <div class="form-item">
+      <label for="stamp-count">개수</label>
+      <select id="stamp-count">
+        <option value="7">7개</option>
+        <option value="30">30개</option>
+        <option value="50">50개</option>
+        <option value="100">100개</option>
+        <option value="custom">직접 입력</option>
+      </select>
+      <input type="number" id="stamp-count-custom" placeholder="직접 입력(1~100)" style="display:none; margin-top:8px;"
+        min="1" max="100">
+    </div>
+
+    <div class="form-item">
+      <label for="stamp-type">달성표 유형</label>
+      <select id="stamp-type" name="stamp_type">
+        <option value="basic">달성형(날짜에 관계없이 목표를 완수)</option>
+        <option value="routine">규칙형(매일 하루 하나씩)</option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <label for="stamp-desc">설명</label>
+      <textarea id="stamp-desc" name="stamp_desc" rows="2" class="desc-textarea" maxlength="200" placeholder="스탬프 설명(~200자)"></textarea>
+    </div>
+
+    <div class="form-item">
+      이미지 등록 (달성 전)
+      <!-- 이미지 등록 버튼 -->
+      <div id="open-before-image-modal" class="thumbnail" >이미지 선택</div>
+      <input type="hidden" id="before-image-id" name="before_image_id" value="">
+    </div>
+
+    <div class="form-item">
+      이미지 등록 (달성 후)
+      <div id="open-after-image-modal" class="thumbnail" >이미지 선택</div>
+      <input type="hidden" id="after-image-id" name="after_image_id" value="">
+    </div>
+
+    <button id="add-stamp-btn">추가</button>
+  </div>
+
+  <!-- 이미지 모달 -->
+  <div id="image-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>이미지 선택</h3>
+        <div class="modal-actions">
+          <button type="button" id="modal-add-btn" class="modal-btn" title="추가" aria-label="추가">➕</button>
+          <button type="button" id="modal-delete-btn" class="modal-btn" title="삭제" aria-label="삭제">🗑️</button>
+          <button type="button" id="modal-close-btn" class="modal-btn" title="닫기" aria-label="닫기">❌</button>
+        </div>
+      </div>
+      <div class="image-grid" style="display:none;">
+      </div>
+      <div class="image-grid-loading">
+        <div class="spinner"></div>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- 하단 네비게이션 -->
   <nav class="bottom-nav">
-    <button class="nav-item active">
+    <button class="nav-item active" onclick="location.href='./index.html'">
       <span>🏠</span>
       <span class="label">홈</span>
     </button>
-    <button class="nav-item">
+    <button class="nav-item" onclick="location.href='./statistics.html'">
       <span>📊</span>
       <span class="label">통계</span>
     </button>
-    <button class="nav-item">
+    <button class="nav-item" onclick="location.href='./setting.html'">
       <span>⚙️</span>
       <span class="label">설정</span>
     </button>
   </nav>
 
+  <div class="alert-modal" id="alert-modal" style="display:none;">
+    <div class="alert-content">
+        <p id="alert-message">팝업 예시.</p>
+        <button id="alert-close">확인</button>
+    </div>
+  </div>
   <script>
+    const modal = document.getElementById("image-modal");
+    const openBeforeBtn = document.getElementById("open-before-image-modal");
+    const openAfterBtn = document.getElementById("open-after-image-modal");
+    const closeBtn = document.getElementById("modal-close-btn");
 
-// 바깥 클릭 시 닫기
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".list-item")) {
-    document.querySelectorAll(".list-item").forEach(i => i.classList.remove("show"));
-  }
-});
+    openBeforeBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+      reloadImageGrid('before'); // 모달 그리기 
+    });
 
-const pages = {
-  home: document.querySelector(".list"),
-  settings: document.getElementById("settings-page")
-};
+    openAfterBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+      reloadImageGrid('after'); // 모달 그리기 
+    });
 
-const navButtons = document.querySelectorAll(".bottom-nav .nav-item");
-
-navButtons.forEach((btn, index) => {
-  btn.addEventListener("click", () => {
-    // active 클래스 갱신
-    navButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    // 페이지 전환
-    Object.values(pages).forEach(p => p.style.display = "none");
-    if (index === 2) { // 설정 메뉴
-      pages.settings.style.display = "block";
-    } else {
-      pages.home.style.display = "block";
+    function selectFile(obj, imageType, imageId){
+      if (imageType === 'before') {
+        document.getElementById("before-image-id").value = imageId;
+        const thumbnail = openBeforeBtn;
+        thumbnail.style.backgroundImage = `url('${obj.src}')`;
+        thumbnail.textContent = ''; // 기본 텍스트 제거
+      } else if (imageType === 'after') {
+        document.getElementById("after-image-id").value = imageId;
+        const thumbnail = openAfterBtn;
+        thumbnail.style.backgroundImage = `url('${obj.src}')`;
+        thumbnail.textContent = ''; // 기본 텍스트 제거
+      }
+      modal.style.display = "none";
     }
-  });
-});
 
-const modal = document.getElementById("image-modal");
-const openBtn = document.getElementById("open-image-modal");
-const closeBtn = document.querySelector(".close-btn");
+    // 이미지 추가 버튼 클릭 시 
+    function uploadFile(imageType){ 
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.style.display = "none";
+      document.body.appendChild(fileInput);
 
-openBtn.addEventListener("click", () => {
-  modal.style.display = "flex";
-});
+      fileInput.addEventListener("change", (e) => onChangeFile(e, imageType));
 
-closeBtn.addEventListener("click", () => {
-  modal.style.display = "none";
-});
+      fileInput.click();
+    }
 
-// 모달 바깥 클릭 시 닫기
-window.addEventListener("click", (e) => {
-  if (e.target === modal) modal.style.display = "none";
-});
+    // 선택한 이미지 s3에 바로 업로드 
+    function onChangeFile(e, imageType){
+        const file = e.target.files[0];
 
-// 직접 업로드 버튼 클릭
-document.querySelector(".upload-item").addEventListener("click", () => {
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/*";
-  fileInput.click();
-  fileInput.addEventListener("change", (e) => {
-    // 선택한 이미지 처리 로직 추가 가능
-    console.log(e.target.files[0]);
-  });
-});
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("is_public", false);
+        formData.append("image_type", imageType);
+        
+        document.querySelector(".image-grid-loading").style.display = "grid";
+        document.querySelector(".image-grid").style.display = "none";
 
+        formFetch(`${ctx}/stamp-image`, 
+        {method: 'PUT', 
+          body: formData
+        }).then((res) => {
+          // 업로드 성공 후 처리
+          if (res.code === 200) {
+            showAlert('이미지가 성공적으로 업로드되었습니다.');
+            reloadImageGrid(imageType);
+          } else {
+            showAlert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+          }
+        });
+    }
+
+    // 모달에 이미지 표시
+    function reloadImageGrid(imageType){
+      const imageGrid = document.querySelector(".image-grid");
+      imageGrid.style.display = "grid";
+      imageGrid.innerHTML = ""; // 기존 내용 초기화
+      apiFetch(`${ctx}/stamp-image?image_type=${imageType}`, 'GET')
+        .then(data => {
+          document.querySelector(".image-grid-loading").style.display = "none";
+          document.getElementById("modal-add-btn").onclick = () => uploadFile(imageType);
+          data.forEach(img => {
+            const imgItem = document.createElement("div");
+            imgItem.classList.add("image-item");
+            imgItem.innerHTML = `<img src="${img.image_key}" alt="" onclick="selectFile(this, '${imageType}', '${img.image_id}')">`;
+            imageGrid.appendChild(imgItem);
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showAlert('서버 오류가 발생했습니다. 나중에 다시 시도해주세요.');
+        });
+    }
+
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // 모달 바깥 클릭 시 닫기
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+
+    // select에서 '직접 입력' 선택 시 input 표시
+    const stampCountSelect = document.getElementById('stamp-count');
+    const stampCountCustom = document.getElementById('stamp-count-custom');
+    stampCountSelect.addEventListener('change', function () {
+      if (this.value === 'custom') {
+        stampCountCustom.style.display = 'block';
+      } else {
+        stampCountCustom.style.display = 'none';
+      }
+    });
+
+    // 추가 버튼 클릭 이벤트 
+    document.querySelector('#add-stamp-btn').addEventListener('click', () => {
+      const stampName = document.getElementById('stamp-name').value;
+      const stampCount = stampCountSelect.value === 'custom' ? stampCountCustom.value : stampCountSelect.value;
+      const stampType = document.getElementById('stamp-type').value;
+      const stampDesc = document.getElementById('stamp-desc').value;
+      const beforeImageId = document.getElementById('before-image-id').value;
+      const afterImageId = document.getElementById('after-image-id').value;
+
+      // 입력값 검증
+      if (!stampName) {
+        alert('달성표명을 입력해주세요.');
+        return;
+      }
+      if (!stampCount || isNaN(stampCount) || stampCount < 1 || stampCount > 100) {
+        alert('유효한 개수를 입력해주세요 (1~100).');
+        return;
+      }
+
+      // JSON 데이터 생성
+      const reqData = {
+        stamp_nm: stampName,
+        total_cnt: stampCount,
+        stamp_type: stampType,
+        stamp_desc: stampDesc,
+        before_image_id: beforeImageId,
+        after_image_id: afterImageId
+      };
+
+      // 서버로 전송 
+      apiFetch(`${ctx}/stamp`, {
+        method: 'POST',
+        body: JSON.stringify(reqData)
+      })
+        .then(data => {
+          if (data.code === 200) {
+            showAlert('달성표가 성공적으로 추가되었습니다!', ()=>{
+              window.location.href = './index.html'; // 홈으로 이동
+            });
+            
+          } else {
+            showAlert('달성표 추가에 실패했습니다. 다시 시도해주세요.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showAlert('서버 오류가 발생했습니다. 나중에 다시 시도해주세요.');
+        });
+    });
   </script>
 
 </body>
+
 </html>
