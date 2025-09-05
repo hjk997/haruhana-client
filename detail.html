@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Tracker</title>
+    <link rel="stylesheet" href="./css/default.css">
+    <link rel="stylesheet" href="./css/stamp.css">
+    <script type="text/javascript" src="./js/profile/properties.local.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+
+<body>
+
+    <!-- 상단 메뉴 -->
+    <header>
+        <div class="header-left">Goal Tracker</div>
+    </header>
+
+    <div id="tracker-detail" class="tracker-detail page">
+        <input type="hidden" id="selected-step" value="">
+
+        <!-- 상단 탭 -->
+        <div class="tab-header" data-html2canvas-ignore>
+            <button class="tab-btn active" data-tab="stamp">스탬프 보기</button>
+            <button class="tab-btn" data-tab="list">리스트 보기</button>
+        </div>
+
+        <!-- 탭 콘텐츠 -->
+        <div class="tab-content" id="tab-stamp">
+            <div class="tab-content-header">
+                <h2 id="stamp_nm"></h2>
+                <div class="tab-action-buttons" style="display: none;">
+                    <button id="memo-add-btn" class="tab-action-btn" onclick="openMemoModal()">메모추가</button>
+                    <button id="undo-btn" class="tab-action-btn" onclick="undoCompleteAction()">되돌리기</button>
+                </div>
+            </div>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <div class="grid" id="stamp-grid">
+                <!-- JS로 n*n 칸 생성 -->
+            </div>
+            <div class="tab-content-bottom">
+                <button id="share-btn" class="tab-action-btn" data-html2canvas-ignore>공유하기</button>
+            </div>
+        </div>
+
+        <!-- 두 번째 탭: 리스트 보기 -->
+        <div class="tab-content" id="tab-list" style="display:none;">
+            <h2>달성 기록</h2>
+            <div class="record-list"></div>
+        </div>
+    </div>
+
+    <!-- 메모 수정 모달 -->
+    <div id="memo-modal" class="memo-modal">
+        <div class="memo-modal-content">
+            <div class="memo-modal-header">
+                <h3>메모 수정</h3>
+                <span class="memo-close-btn" onclick="closeMemoModal()">&times;</span>
+            </div>
+            <textarea id="memo-input" rows="4" maxlength="500"></textarea>
+            <div class="memo-modal-bottom">
+                <div class="memo-char-count" id="memo-char-count">(0/500)</div>
+                <button id="memo-save" class="memo-save-btn">
+                    저장
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert-modal" id="alert-modal" style="display:none;">
+        <div class="alert-content">
+            <p id="alert-message">팝업 예시.</p>
+            <button id="alert-close" onclick="hideAlert()">확인</button>
+        </div>
+    </div>
+
+    <!-- 폭죽 애니메이션 컨테이너 -->
+    <div id="firework-container" class="firework-container"></div>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="location.href='./index.html'">
+            <span>🏠</span>
+            <span class="label">홈</span>
+        </button>
+        <button class="nav-item" onclick="location.href='./statistics.html'">
+            <span>📊</span>
+            <span class="label">통계</span>
+        </button>
+        <button class="nav-item" onclick="location.href='./setting.html'">
+            <span>⚙️</span>
+            <span class="label">설정</span>
+        </button>
+    </nav>
+
+    <script>
+        let stampInfo = {}; // 스탬프 기본 정보 
+        let stampRecords = {}; // 스탬프 각 속성 별 기본 정보 
+        let isComplete = false; // 스탬프 완성 여부
+        const selectedStep = document.getElementById("selected-step");
+        const tabActionBtn = document.querySelector(".tab-action-buttons");
+        const memoCharCount = document.getElementById('memo-char-count'); // 문자 수 카운터
+        const params = new URLSearchParams(window.location.search);
+        const stampId = params.get('stamp_id');
+
+        // document.ready 
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Document is ready with vanilla JavaScript!');
+
+            if (!stampId) {
+                showAlert("잘못된 접근입니다. 다시 로그인해주세요.", () => {
+                    location.href = './login.html';
+                });
+                return;
+            }
+
+            drawStampArea();
+        });
+
+        // 탭 전환
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+
+                btn.classList.add("active");
+                const tabId = btn.dataset.tab;
+                document.getElementById("tab-" + tabId).style.display = "block";
+
+                if(tabId === "list"){
+                    renderRecords();
+                }else if(tabId === "stamp"){
+                    renderGrids();
+                }
+            });
+        });
+
+        function drawStampArea() {
+            apiFetch(`${ctx}/stamp?stamp_id=${stampId}`, {
+                method: 'GET'
+            })
+            .then(data => {
+                stampInfo = data;
+                if(stampInfo.progress_cnt >= stampInfo.total_cnt){
+                    isComplete = true;
+                }
+                apiFetch(`${ctx}/stamp/record?stamp_id=${stampInfo.stamp_id}`, {
+                    method: 'GET'
+                }).then(data => {
+                    stampRecords = data;
+                    document.getElementById("stamp_nm").innerText = stampInfo.stamp_nm;
+                    renderGrids();
+                    renderRecords();
+                    // 스탬프 완성했을 때 이벤트
+                    if(isComplete){
+                        showAlert("축하합니다! 스탬프를 모두 완성하셨습니다! 🎉");
+                        launchFireworks();
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    showAlert("스탬프 상세 정보를 불러오기 실패하였습니다. 다시 시도해주세요.");
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert("스탬프 목록을 불러오기 실패하였습니다. 다시 로그인해주세요.", () => {
+                    location.href = './login.html';
+                });
+                return;
+            });
+            
+        }
+
+        // 스탬프 그리드 생성
+        function renderGrids() {
+            const grid = document.getElementById("stamp-grid");
+            let total = stampInfo.total_cnt;
+
+            let countOfCols;
+            if(total < 10){
+                countOfCols = total;
+            }else{
+                countOfCols = Math.ceil(Math.sqrt(total));
+                countOfCols = countOfCols > 10 ? 10 : countOfCols;
+            }
+            document.querySelector('.grid').style.setProperty('--count-of-cols', countOfCols);
+
+            const records = stampRecords.data ?? [];
+            grid.innerHTML = '';
+
+            for (const r of records) {
+                const cell = document.createElement("div");
+                cell.className = "cell";
+                if (r.is_complete) {
+                    cell.classList.add("completed");
+                }
+                cell.style.backgroundImage = `url('${r.is_complete ? stampInfo.after_image_url : stampInfo.before_image_url}')`;
+                if(!isComplete){
+                    cell.addEventListener("click", () => {
+                        if (!cell.classList.contains("completed")) {
+                            // 스탬프를 차례대로 눌렀을 때만 완료 처리 
+                            if(r.step !== 1 && !records[r.step - 2].is_complete) {
+                                showAlert("이전 스탬프부터 차례대로 눌러주세요.");
+                                return;
+                            }
+    
+                            cell.classList.add("completed");
+                            cell.style.backgroundImage = `url('${stampInfo.after_image_url}')`;
+                            r.is_complete = true;
+                            selectedStep.value = r.step - 1;
+                            updateStampRecords();
+                        }else{
+                            selectedStep.value = r.step - 1;
+                            tabActionBtn.style.display = "flex";
+                        }
+                    });
+                }
+                grid.appendChild(cell);
+            }
+        }
+
+        // 리스트 렌더링
+        function renderRecords() {
+            const recordList = document.querySelector(".record-list");
+            recordList.innerHTML = "";
+            stampRecords.data.forEach((r, i) => {
+                const div = document.createElement("div");
+                div.className = "record-item";
+                div.dataset.index = i;
+                div.innerHTML = `
+                        <div class="thumbnail" style="background-image:url('${r.is_complete ? stampInfo.after_image_url : stampInfo.before_image_url}')"></div>
+                        <div class="content">
+                            <div class="title">${r.step}일째</div>
+                            <div class="memo-text">${r.memo || "메모 없음"}</div>
+                        </div>
+                        `;
+                recordList.appendChild(div);
+            });
+            
+            if(!isComplete){
+                recordList.addEventListener("click", (e) => {
+                    const item = e.target.closest(".record-item");
+                    if (!item) return;
+    
+                    if(stampRecords.data[item.dataset.index].is_complete){
+                        selectedStep.value = item.dataset.index;
+                        openMemoModal();
+                    }
+                });
+            }
+        }
+
+        // 스탬프 기록 업데이트 
+        function updateStampRecords(){
+            const step = selectedStep.value;
+            const record = stampRecords.data[step];
+            const progress_cnt = stampRecords.data.filter(r => r.is_complete).length;
+            
+            apiFetch(`${ctx}/stamp/progress`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    stamp_id: stampInfo.stamp_id,
+                    progress_cnt: progress_cnt,
+                    ...record
+                })
+            }).then(data => {
+                console.log('Success:', data);
+                drawStampArea();
+            }).catch(error => {
+                console.error('Error:', error);
+                showAlert("스탬프 기록 업데이트에 실패하였습니다. 다시 시도해주세요.");
+            });
+        }
+
+        // 바깥 클릭 시 tab 콘텐츠 영역 버튼 숨기기
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".cell")) {
+                tabActionBtn.style.display = "none";
+            }
+        });
+      
+        // 되돌리기 버튼 클릭 시 
+        function undoCompleteAction(){
+            const step = selectedStep.value;
+            const record = stampRecords.data[step];
+            // 스탬프를 차례대로 눌렀을 때만 취소 처리 
+            if(record.step !== stampRecords.data.length && stampRecords.data[record.step].is_complete) {
+                showAlert("최근 스탬프부터 차례대로 눌러주세요.");
+                return;
+            }
+            if (record.is_complete) {
+                record.is_complete = false;
+                record.memo = null;
+                updateStampRecords();
+            }
+        }
+
+        document.getElementById("share-btn").addEventListener("click", async () => {
+            tabActionBtn.style.display = "none";
+            const element = document.getElementById("tracker-detail");
+            
+            const canvas = await html2canvas(element, {
+                useCORS: true,        // CORS 허용
+                allowTaint: false,     // 이미지를 깨끗하게 처리
+                scale: 2               // 해상도 향상
+            });
+            const dataUrl = canvas.toDataURL("image/png");
+
+            // dataUrl = base64 이미지
+            console.log(dataUrl);
+                    
+            // 다운로드 링크 생성(테스트)
+            const link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = "stamp-board.png"; // 저장될 파일명
+            link.click();
+        });
+
+        // 메모 모달 관련
+        const modal = document.getElementById("memo-modal");
+        const memoInput = document.getElementById("memo-input");
+        const saveBtn = document.getElementById("memo-save");
+
+        // 메모 모달 열기
+        function openMemoModal() {
+            memoInput.value = stampRecords.data[selectedStep.value].memo;
+            memoCharCount.textContent = `(${memoInput.value.length}/500)`;
+            modal.classList.add('show');
+        }
+
+        // 모달 닫기
+        function closeMemoModal(){
+            modal.classList.remove('show');
+        }
+
+        // 메모 저장
+        saveBtn.addEventListener("click", () => {
+            stampRecords.data[selectedStep.value].memo = memoInput.value;
+            closeMemoModal();
+            updateStampRecords();
+        });
+
+        // 문자 수 카운터
+        memoInput.addEventListener('input', function() {
+            memoCharCount.textContent = `(${memoInput.value.length}/500)`;
+        });
+
+        // 폭죽 애니메이션 관련
+        function launchFireworks() {
+          const container = document.getElementById('firework-container');
+          if (!container) return;
+          const colors = ['#ff7aa2', '#ffd700', '#7adfff', '#ffb347', '#b47aff', '#7affb4', '#ff7a7a'];
+          const num = 18;
+          for (let i = 0; i < num; i++) {
+            const angle = (2 * Math.PI * i) / num;
+            const x = Math.cos(angle) * (window.innerWidth * 0.48); // 더 크게
+            const y = -Math.abs(Math.sin(angle) * (window.innerHeight * 0.45) + 80); // 더 위로
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.background = colors[i % colors.length];
+            firework.style.setProperty('--x', `${x}px`);
+            firework.style.setProperty('--y', `${y}px`);
+            firework.style.left = `calc(50% + ${Math.random()*60-30}px)`;
+            firework.style.width = '16px';
+            firework.style.height = '16px';
+            container.appendChild(firework);
+            setTimeout(() => firework.remove(), 1400);
+          }
+        }
+
+    </script>
+    <script type="text/javascript" src="./js/common.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,308 @@
+/* 탭 헤더 */
+.tab-header {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 12px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tab-btn.active {
+    border-bottom: 2px solid #ff7aa2;
+    color: #ff7aa2;
+}
+
+.grid {
+    --count-of-cols: 5;
+    display: grid;
+    grid-template-columns: repeat(var(--count-of-cols), 60px);
+    /* 5열, 60px 고정 */
+    grid-auto-rows: 60px;
+    /* 행 높이 고정 */
+    gap: 8px;
+    /* 동일 간격 */
+    justify-content: center;
+}
+
+.cell {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+    background-size: 80% 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.cell.completed {
+    background-color: #f0f0f0;
+    background-size: 80% 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    border-color: #ff7aa2;
+    transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+    .grid {
+        --count-of-cols: 8; /* 모바일에서 8칸 */
+        grid-template-columns: repeat(var(--count-of-cols), 1fr);
+        grid-auto-rows: 1fr;
+        width: 100%;
+        max-width: 100vw;
+    }
+    .cell {
+        width: 100%;
+        aspect-ratio: 1 / 1; /* 정사각형 자동 */
+        height: auto;
+        min-width: 28px; /* 너무 작아지지 않게 */
+        min-height: 28px;
+    }
+}
+
+/* 리스트 보기 */
+.record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.record-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.record-item:hover {
+    background: #f9f9f9;
+}
+
+.record-item .thumbnail {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 6px;
+    background-color: #f0f0f0;
+    background-size: 80% 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.record-item .content {
+    flex: 1;
+}
+
+.record-item .title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.record-item .memo-text {
+    font-size: 0.9rem;
+    color: #555;
+    white-space: pre-line;
+    /* 여러 줄 표시 */
+}
+
+/* 메모 모달 [S] */
+.memo-modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.memo-modal.show {
+    display: flex;
+}
+
+.memo-modal-content {
+    background: #fff;
+    /* margin: 15% auto; */
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    position: relative;
+}
+
+.memo-modal-content textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fafafd;
+    color: #333;
+    outline: none;
+    resize: vertical;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.memo-modal-content textarea:focus {
+    border-color: #ff7aa2;
+    box-shadow: 0 0 5px rgba(255, 122, 162, 0.15);
+    background: #fff;
+}
+
+.memo-modal-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 8px;
+}
+
+.memo-modal-header h3 {
+    flex: 1;
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.memo-close-btn {
+    cursor: pointer;
+    font-size: 20px;
+    color: #555;
+    margin-left: auto;
+}
+
+.memo-modal-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    gap: 8px;
+}
+
+.memo-save-btn {
+    margin-top: 0;
+    margin-left: 0;
+    padding: 8px 12px;
+    background: #ff7aa2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    display: inline-block;
+}
+
+.memo-char-count {
+    text-align: left;
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+    letter-spacing: 0.5px;
+    user-select: none;
+}
+/* 메모 모달 [E] */
+
+/* 탭 콘텐츠 헤더 [S] */
+.tab-content-header{
+    display:flex; 
+    align-items:center; 
+    justify-content:space-between; 
+    gap:12px; 
+    margin-bottom:20px;
+}
+
+.tab-content-header h2{
+    margin:0; 
+    font-size:1.2rem; 
+    font-weight:600; 
+    color:#333;
+}
+
+.tab-action-buttons{
+    gap:8px;
+}
+
+.tab-action-btn {
+    padding: 7px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #f0f0f0;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.tab-action-btn:hover {
+    background: #ff7aa2;
+    color: #fff;
+}
+/* 탭 콘텐츠 헤더 [E] */
+
+.tab-content-bottom {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 12px;
+}
+/* 불꽃 애니메이션 [S] */
+.firework-container {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 40vh;
+    pointer-events: none;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+.firework {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: firework-explode 1.2s cubic-bezier(.4,1.6,.6,1) forwards;
+}
+@keyframes firework-explode {
+    0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+    60% { opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0.7); opacity: 0; }
+}
+/* 불꽃 애니메이션 [E] */

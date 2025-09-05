@@ -180,7 +180,7 @@
       margin-right: 1rem;
       flex-shrink: 0;
       background-color: #f0f0f0;
-      background-size: cover;
+      background-size: 80% 80%;
       background-position: center;
       background-repeat: no-repeat;
       display: inline-block;
@@ -196,7 +196,7 @@
       justify-content: center;
       overflow: hidden;
       margin-top: 10px;
-      background-size: cover;
+      background-size: 80% 80%;
       background-position: center;
     }
 
