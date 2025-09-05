@@ -67,19 +67,16 @@
     // document.ready 
     document.addEventListener('DOMContentLoaded', function () {
       console.log('Document is ready with vanilla JavaScript!');
-      
-      const token = localStorage.getItem('access_token');
-      if(token === null || token === undefined) {
-        location.href = './login.html';
-        return;
-      }
 
-      apiFetch(`${ctx}/stamp`, {
+      apiFetch(`${ctx}/stamp/list`, {
             method: 'GET'
         })
         .then(data => {
           console.log(data);
           drawStampList(data);
+
+          // 필터 토글 이벤트
+          //setToggleEvent();  
         })
         .catch(error => {
           console.error('Error:', error);
@@ -91,41 +88,7 @@
       
     });
 
-    // 스탬프 목록에 있는 드롭다운 메뉴 토글 
-    document.querySelectorAll(".menu-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const item = e.target.closest(".list-item");
-        const dropdown = item.querySelector(".dropdown");
-
-        // 다른 드롭다운 닫기
-        document.querySelectorAll(".list-item").forEach(i => {
-          if (i !== item) i.classList.remove("show");
-        });
-
-        // 현재 토글
-        item.classList.toggle("show");
-
-        if (item.classList.contains("show")) {
-          // 위치 계산
-          const rect = dropdown.getBoundingClientRect();
-          if (rect.bottom > window.innerHeight) {
-            dropdown.style.top = "auto";
-            dropdown.style.bottom = "100%"; // 위로 열림
-          } else {
-            dropdown.style.top = "100%";
-            dropdown.style.bottom = "auto"; // 아래로 열림
-          }
-        }
-      });
-    });
-
-    // 바깥 클릭 시 닫기
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".list-item")) {
-        document.querySelectorAll(".list-item").forEach(i => i.classList.remove("show"));
-      }
-    });
-
+    // 스탬프 목록 그리기 
     function drawStampList(data){
       const listContainer = document.querySelector(".list");
       const emptyContainer = document.querySelector(".list.empty");
@@ -146,7 +109,7 @@
       data.forEach(stamp => {
         const percent = Math.floor(stamp.progress_cnt / stamp.total_cnt * 100);
         html = `
-          <div class="list-item">
+          <div class="list-item" onclick="location.href='./detail.html?stamp_id=${stamp.stamp_id}'">
             <div class="thumbnail"></div>
             <div class="info">
               <div class="title">${stamp.stamp_nm}</div>
@@ -155,8 +118,8 @@
                 <span class="progress-text">${stamp.progress_cnt}/${stamp.total_cnt}</span>
               </div>
             </div>
-            <button class="menu-btn">⋮</button>
-            <div class="dropdown">
+            <button class="menu-btn" style="display: none;">⋮</button>
+            <div class="dropdown" style="display: none;">
               <button>편집</button>
               <button>삭제</button>
               <button>공유</button>
@@ -168,9 +131,44 @@
         const lastItem = listContainer.lastElementChild;
         lastItem.querySelector(".thumbnail").style.backgroundImage = `url(${stamp.image_url})`;
       });
-      //listContainer.innerHTML = html;
     }
 
+    function setToggleEvent(){
+      // 스탬프 목록에 있는 드롭다운 메뉴 토글 
+      document.querySelectorAll(".menu-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const item = e.target.closest(".list-item");
+          const dropdown = item.querySelector(".dropdown");
+
+          // 다른 드롭다운 닫기
+          document.querySelectorAll(".list-item").forEach(i => {
+            if (i !== item) i.classList.remove("show");
+          });
+
+          // 현재 토글
+          item.classList.toggle("show");
+
+          if (item.classList.contains("show")) {
+            // 위치 계산
+            const rect = dropdown.getBoundingClientRect();
+            if (rect.bottom > window.innerHeight) {
+              dropdown.style.top = "auto";
+              dropdown.style.bottom = "100%"; // 위로 열림
+            } else {
+              dropdown.style.top = "100%";
+              dropdown.style.bottom = "auto"; // 아래로 열림
+            }
+          }
+        });
+      });
+
+      // 바깥 클릭 시 닫기
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".list-item")) {
+          document.querySelectorAll(".list-item").forEach(i => i.classList.remove("show"));
+        }
+      });
+    }
   </script>
   <script type="text/javascript" src="./js/common.js"></script>
 </body>
