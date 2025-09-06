@@ -67,16 +67,18 @@
     // document.ready 
     document.addEventListener('DOMContentLoaded', function () {
       console.log('Document is ready with vanilla JavaScript!');
+      callStampList();
+    });
 
-      apiFetch(`${ctx}/stamp/list`, {
-            method: 'GET'
+    function callStampList(){
+      let is_complete = document.getElementById("filter-toggle").checked ? 'Y' : 'N';
+
+      apiFetch(`${ctx}/stamp/list?is_complete=${is_complete}`, {
+            method: 'GET',
         })
         .then(data => {
           console.log(data);
           drawStampList(data);
-
-          // 필터 토글 이벤트
-          //setToggleEvent();  
         })
         .catch(error => {
           console.error('Error:', error);
@@ -85,8 +87,7 @@
           });
           return;
         });
-      
-    });
+    }
 
     // 스탬프 목록 그리기 
     function drawStampList(data){
@@ -105,11 +106,10 @@
         listContainer.style.display = "block";
       }
 
-      let html = '';
       data.forEach(stamp => {
         const percent = Math.floor(stamp.progress_cnt / stamp.total_cnt * 100);
-        html = `
-          <div class="list-item" onclick="location.href='./detail.html?stamp_id=${stamp.stamp_id}'">
+        const html = `
+          <div class="list-item">
             <div class="thumbnail"></div>
             <div class="info">
               <div class="title">${stamp.stamp_nm}</div>
@@ -118,8 +118,8 @@
                 <span class="progress-text">${stamp.progress_cnt}/${stamp.total_cnt}</span>
               </div>
             </div>
-            <button class="menu-btn" style="display: none;">⋮</button>
-            <div class="dropdown" style="display: none;">
+            <button class="menu-btn" style="display:none;">⋮</button>
+            <div class="dropdown">
               <button>편집</button>
               <button>삭제</button>
               <button>공유</button>
@@ -127,16 +127,24 @@
           </div>
         `;
         listContainer.insertAdjacentHTML('beforeend', html);
-
         const lastItem = listContainer.lastElementChild;
         lastItem.querySelector(".thumbnail").style.backgroundImage = `url(${stamp.image_url})`;
       });
-    }
 
-    function setToggleEvent(){
+      // 각 list-item 클릭 시 상세 페이지 이동 (menu-btn 클릭 시는 제외)
+      listContainer.querySelectorAll('.list-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+          if (e.target.closest('.menu-btn')) return; // 메뉴버튼 클릭 시 무시
+          const idx = Array.from(listContainer.children).indexOf(item);
+          const stamp = data[idx];
+          location.href = `./detail.html?stamp_id=${stamp.stamp_id}`;
+        });
+      });
+      /*
       // 스탬프 목록에 있는 드롭다운 메뉴 토글 
       document.querySelectorAll(".menu-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
+          e.stopPropagation(); // 부모로 이벤트 전파 방지
           const item = e.target.closest(".list-item");
           const dropdown = item.querySelector(".dropdown");
 
@@ -168,6 +176,11 @@
           document.querySelectorAll(".list-item").forEach(i => i.classList.remove("show"));
         }
       });
+      */
+    }
+
+    document.getElementById("filter-toggle").onchange = function() {
+      callStampList();
     }
   </script>
   <script type="text/javascript" src="./js/common.js"></script>
