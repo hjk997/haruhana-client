@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Tracker</title>
+  <link rel="stylesheet" href="./css/default.css">
+  <script type="text/javascript" src="./js/common.js"></script>
+  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
+  <style>
+/* 페이지 레이아웃 */
+.add-tracker-page {
+  padding: 16px;
+  margin-bottom: 60px;
+}
+.add-tracker-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+/* 폼 관련 */
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+.form-item label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+.form-item input[type="text"] {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+.form-item input[type="text"]:focus {
+  border-color: #ff7aa2;
+  box-shadow: 0 0 5px rgba(255,122,162,0.3);
+}
+
+.add-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff7aa2;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.add-btn:hover {
+  background-color: #ff6090;
+}
+
+/* 입력 오류 메시지 */
+.input-error {
+  display: flex;
+  align-items: center;
+  color: #ff4d4f;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-left: 4px;
+  min-height: 20px;
+  gap: 4px;
+}
+.error-icon {
+  font-size: 15px;
+  margin-right: 2px;
+  line-height: 1;
+}
+
+/* 결과 안내 박스 */
+.pw-result-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+}
+.pw-result-text {
+  font-size: 1.08rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+.go-login-btn {
+  padding: 0.9rem 0;
+  border: none;
+  border-radius: 10px;
+  background: #ff7aa2;
+  color: #fff;
+  font-size: 1.08rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-width: 280px;
+}
+.go-login-btn:hover {
+  background: #ff6090;
+}
+.form-item-row {
+  flex-direction: row;
+  gap: 12px;
+  margin-bottom: 0;
+}
+.find-id-btn {
+  flex: 1;
+}
+.find-pw-btn {
+  flex: 1;
+  background: #4a90e2;
+}
+.find-pw-btn:hover {
+  background: #357abd;
+}
+.find-pw-controller {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+}
+  </style>
+</head>
+<body>
+
+  <!-- 상단 메뉴 -->
+  <header>
+    <div class="header-left">하루하나</div>
+    <div class="header-right">
+    </div>
+  </header>
+  <div class="add-tracker-page page">
+    <h2>아이디/비밀번호 찾기</h2>
+
+    <div class="input-controller">
+      <div class="form-item">
+        <label for="user_email">이메일</label>
+        <input type="text" id="user_email" name="user_email" placeholder="가입 시 등록한 이메일">
+        <div class="input-error" id="user_email_error" style="display:none;">
+          <span class="error-icon">&#9888;</span>
+          올바른 이메일 형식이 아닙니다.
+        </div>
+      </div>
+
+      <div class="form-item form-item-row">
+        <button id="findIdBtn" class="add-btn find-id-btn">아이디 찾기</button>
+        <button id="findPwBtn" class="add-btn find-pw-btn">비밀번호 찾기</button>
+      </div>
+
+      <div class="input-error" id="find_result" style="display:none; margin-top:16px; text-align:center;"></div>
+    </div>
+    
+    <div class="find-pw-controller" style="display:none;">
+      <div class="pw-result-box">
+        <div class="pw-result-text">입력하신 이메일로 임시 비밀번호를 발송하였습니다.</div>
+        <button class="go-login-btn" onclick="location.href='login.html'">로그인하기</button>
+      </div>
+    </div>
+  </div>
+
+
+<div class="alert-modal" id="alert-modal" style="display:none;">
+<div class="alert-content">
+    <p id="alert-message">팝업예시</p>
+    <button id="alert-close" onclick="hideAlert()">확인</button>
+</div>
+  <script>
+  // 이메일 유효성 검사
+function validateEmail(email) {
+  return /^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(email);
+}
+
+const emailInput = document.getElementById('user_email');
+const emailError = document.getElementById('user_email_error');
+const resultMsg = document.getElementById('find_result');
+
+document.getElementById('findIdBtn').onclick = function() {
+  const email = emailInput.value.trim();
+  if (!validateEmail(email)) {
+    emailError.style.display = 'flex';
+    resultMsg.style.display = 'none';
+    return;
+  } else {
+    emailError.style.display = 'none';
+  }
+  // TODO: 실제 아이디 찾기 API 호출
+  resultMsg.style.display = 'flex';
+  resultMsg.style.color = '#4a90e2';
+  resultMsg.innerHTML = '입력하신 이메일로 아이디를 전송했습니다.';
+}
+
+document.getElementById('findPwBtn').onclick = function() {
+  const email = emailInput.value.trim();
+  if (!validateEmail(email)) {
+    emailError.style.display = 'flex';
+    resultMsg.style.display = 'none';
+    return;
+  } else {
+    emailError.style.display = 'none';
+  }
+  // TODO: 실제 비밀번호 찾기 API 호출
+  resultMsg.style.display = 'flex';
+  resultMsg.style.color = '#4a90e2';
+  resultMsg.innerHTML = '입력하신 이메일로 임시 비밀번호를 전송했습니다.';
+}
+  </script>
+
+</body>
+</html>
