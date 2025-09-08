@@ -452,3 +452,48 @@
       margin-bottom: 4px;
     }
     /* 스탬프-목록없음 화면 [E] */
+
+    /* 알림창 [S]*/
+    
+    
+    /* 좋아요 버튼 */
+    .like-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #bbb;
+      cursor: pointer;
+      transition: color 0.2s;
+      margin-left: 8px;
+    }
+    .like-btn.liked {
+      color: #ff7aa2;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #bbb;
+      cursor: pointer;
+      transition: color 0.2s;
+      margin-left: 8px;
+    }
+    .accept-btn {
+      background: #bbb;
+      border: none;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-left: 8px;
+    }
+    .accept-btn:hover {
+      background: #ff6090;
+    }

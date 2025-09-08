@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Tracker</title>
+  <link rel="stylesheet" href="./css/default.css">
+  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
+</head>
+
+<body>
+
+  <!-- 상단 메뉴 -->
+  <header>
+    <div class="header-left">Goal Tracker</div>
+    <div class="header-right">
+      <button id="add-btn">👥</button>
+    </div>
+  </header>
+
+  <div id="timeline-page" class="list-container">
+    <!-- 토글 버튼 -->
+    <div class="list-header">
+    </div>
+    <div class="list">
+      <div class="list-item">
+        <div class="thumbnail"></div>
+        <div class="info">
+          <div class="title">user님이 오늘의 목표를 달성하였습니다!</div>
+        </div>
+        <button class="like-btn" aria-label="좋아요">&#10084;</button>
+        <button class="close-btn" aria-label="삭제">×</button>
+      </div>
+      <div class="list-item">
+        <div class="thumbnail"></div>
+        <div class="info">
+          <div class="title">user님이 친구 신청을 보냈습니다!</div>
+        </div>
+        <button class="accept-btn" aria-label="친구신청 수락">+</button>
+        <button class="close-btn" aria-label="삭제">×</button>
+      </div>
+    </div>
+    <!-- 달성표 목록 없을 때 -->
+    <div class="list empty" style="display:none;">
+      <div class="empty-message">
+        <span class="empty-icon">📄</span>
+        <span>데이터가 없습니다.</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="alert-modal" id="alert-modal" style="display:none;">
+    <div class="alert-content">
+        <p id="alert-message">팝업 예시.</p>
+        <button id="alert-close" onclick="hideAlert()">확인</button>
+    </div>
+  </div>
+  <script>
+    // document.ready 
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('Document is ready with vanilla JavaScript!');
+    });
+
+    function callStampList(){
+      apiFetch(`${ctx}/stamp/list`, {
+            method: 'GET',
+        })
+        .then(data => {
+          console.log(data);
+          drawStampList(data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showAlert("스탬프 목록을 불러오기 실패하였습니다. 다시 로그인해주세요.", () =>{
+            location.href = './login.html';
+          });
+          return;
+        });
+    }
+
+    // 스탬프 목록 그리기 
+    function drawStampList(data){
+      const listContainer = document.querySelector(".list");
+      const emptyContainer = document.querySelector(".list.empty");
+
+      // 기존 목록 초기화
+      listContainer.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        emptyContainer.style.display = "flex";
+        listContainer.style.display = "none";
+        return;
+      } else {
+        emptyContainer.style.display = "none";
+        listContainer.style.display = "block";
+      }
+
+      data.forEach(stamp => {
+        const percent = Math.floor(stamp.progress_cnt / stamp.total_cnt * 100);
+        const html = `
+          <div class="list-item">
+            <div class="thumbnail"></div>
+            <div class="info">
+              <div class="title">${stamp.stamp_nm}</div>
+              <div class="progress">
+                <div class="progress-bar" style="width: ${percent}%;"></div>
+                <span class="progress-text">${stamp.progress_cnt}/${stamp.total_cnt}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        listContainer.insertAdjacentHTML('beforeend', html);
+        const lastItem = listContainer.lastElementChild;
+        lastItem.querySelector(".thumbnail").style.backgroundImage = `url(${stamp.image_url})`;
+      });
+    }
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('like-btn')) {
+        e.target.classList.toggle('liked');
+      }
+    });
+
+  </script>
+  <script type="text/javascript" src="./js/common.js"></script>
+</body>
+
+</html>
