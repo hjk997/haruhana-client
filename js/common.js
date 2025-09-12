@@ -1,3 +1,12 @@
+const domainName = window.location.hostname;
+let ctx;
+if(domainName.startsWith('localhost') || domainName.startsWith('127.0.0.1')) {
+  ctx = 'http://localhost:8000';
+} else if(domainName.startsWith('marvelous-twilight-b67362.netlify.app') || 
+        domainName.startsWith('www.marvelous-twilight-b67362.netlify.app')){
+  ctx = 'https://haruhana-stamp.com';
+}
+
 function showAlert(message, callbackFc = hideAlert) {
   const modal = document.getElementById("alert-modal");
   const msg = document.getElementById("alert-message");
@@ -10,6 +19,11 @@ function showAlert(message, callbackFc = hideAlert) {
 function hideAlert() {
   const modal = document.getElementById("alert-modal");
   modal.style.display = "none";
+}
+
+  // 이메일 유효성 검사
+function validateEmail(email) {
+  return /^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(email);
 }
 
 async function apiFetch(url, optionsParam = {}) {

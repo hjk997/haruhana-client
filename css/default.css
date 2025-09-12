@@ -155,6 +155,37 @@
     }
     /* 팝업 [E] */
 
+    /* 데모 안내 팝업 [S] */
+    .demo-alert-modal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      z-index: 3000;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.18);
+    }
+
+    .demo-alert-modal .alert-content {
+      background: #fff;
+      border-radius: 14px;
+      padding: 22px 20px 16px 20px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      min-width: 260px;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .demo-alert-modal .alert-content p {
+      font-size: 0.97rem;
+      color: #555;
+      margin-bottom: 18px;
+      line-height: 1.7;
+      white-space: pre-line; /* 줄바꿈 적용 */
+      word-break: keep-all;
+    }
+    /* 데모 안내 팝업 [E] */
+
     /* 메인 - 목록 영역 [S] */
     .list {
       padding: 1rem;
@@ -198,6 +229,7 @@
       margin-top: 10px;
       background-size: 80% 80%;
       background-position: center;
+      background-repeat: no-repeat;
     }
 
     .info {
@@ -497,3 +529,80 @@
     .accept-btn:hover {
       background: #ff6090;
     }
+    /* 알림창 [E]*/
+    /* 친구창 [S] */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      margin: 12px 8px 16px 8px;
+      gap: 6px;
+    }
+
+    .search-bar input[type="text"] {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 1rem;
+      flex: 1;
+      padding: 6px 0;
+    }
+
+    .search-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      font-size: 1.2rem;
+      color: #888;
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #bbb;
+      cursor: pointer;
+      margin-right: 4px;
+      transition: color 0.2s;
+    }
+    .clear-btn:hover {
+      color: #ff7aa2;
+    }
+
+    .friend-count {
+      margin: 0 16px 0px 16px;
+      font-size: 1rem;
+      color: #444;
+      font-weight: 500;
+    }
+    .friend-count-num {
+      color: #ff7aa2;
+      font-weight: bold;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      margin: 18px 0 8px 12px;
+      color: #333;
+    }
+    .section-divider {
+      border: none;
+      border-top: 1.5px solid #eee;
+      margin: 18px 0 18px 0;
+    }
+    .friend-list-header{
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 8px;    
+    }
+    /* 친구창 [E] */

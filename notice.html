@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goal Tracker</title>
   <link rel="stylesheet" href="./css/default.css">
-  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
+  <script type="text/javascript" src="./js/common.js"></script>
 </head>
 
 <body>
@@ -14,9 +14,6 @@
   <!-- 상단 메뉴 -->
   <header>
     <div class="header-left">Goal Tracker</div>
-    <div class="header-right">
-      <button id="add-btn">👥</button>
-    </div>
   </header>
 
   <div id="timeline-page" class="list-container">
@@ -35,7 +32,7 @@
       <div class="list-item">
         <div class="thumbnail"></div>
         <div class="info">
-          <div class="title">user님이 친구 신청을 보냈습니다!</div>
+          <div class="title">개발중입니다.</div>
         </div>
         <button class="accept-btn" aria-label="친구신청 수락">+</button>
         <button class="close-btn" aria-label="삭제">×</button>
@@ -56,6 +53,19 @@
         <button id="alert-close" onclick="hideAlert()">확인</button>
     </div>
   </div>
+
+  <!-- 하단 네비게이션 -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="location.href='./index.html'">
+      <span>🏠</span>
+      <span class="label">홈</span>
+    </button>
+    <button class="nav-item" onclick="location.href='./setting.html'">
+      <span>⚙️</span>
+      <span class="label">설정</span>
+    </button>
+  </nav>
+
   <script>
     // document.ready 
     document.addEventListener('DOMContentLoaded', function () {
@@ -123,7 +133,6 @@
     });
 
   </script>
-  <script type="text/javascript" src="./js/common.js"></script>
 </body>
 
 </html>

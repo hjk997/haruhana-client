@@ -6,7 +6,6 @@
   <title>Goal Tracker</title>
   <link rel="stylesheet" href="./css/default.css">
   <script type="text/javascript" src="./js/common.js"></script>
-  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
   <style>
 .add-tracker-page {
   padding: 16px;
@@ -265,8 +264,9 @@
         .then(response => response.json())
         .then(data => {
             console.log(data)
-            showAlert("회원가입에 성공하였습니다. 메인화면으로 돌아가서 다시 로그인해주세요.");
-            location.href = './login.html';
+            showAlert("회원가입에 성공하였습니다. 메인화면으로 돌아가서 다시 로그인해주세요.", ()=>{
+              location.href = './login.html';
+            });
         })
         .catch(error => {
             console.error('Error:', error)

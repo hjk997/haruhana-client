@@ -3,11 +3,19 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff7aa2">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goal Tracker</title>
   <link rel="stylesheet" href="./css/default.css">
   <script type="text/javascript" src="./js/common.js"></script>
-  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
 </head>
 
 <body>
@@ -29,7 +37,7 @@
       <button id="loginBtn">확인</button>
       <div class="links">
         <a href="./signup.html">회원가입</a>
-        <a href="#">아이디 / 비밀번호 찾기</a>
+        <a href="./find-info.html">아이디 / 비밀번호 찾기</a>
       </div>
     </div>
   </div>
@@ -41,7 +49,34 @@
     </div>
   </div>
 
+  <div class="demo-alert-modal" id="demo-alert-modal">
+    <div class="alert-content">
+      <p id="alert-message">포트폴리오 공개를 위해 임시 개방한 데모 페이지입니다. <br/>
+        현재 구현된 기능: 로그인, 회원가입, 스탬프 리스트 확인, 스탬프 추가, 스탬프 기능 활용(목표달성, 되돌리기, 메모추가) <br/>
+        미구현 기능: 아이디/비밀번호 찾기, 설정, 친구등록, 알림 기능 <br/>
+        ※ 데모용 계정 <br/>
+        id: demo <br/>
+        pw: 1234 <br/>
+      혹은 직접 회원가입하셔도 됩니다.</p>
+      <button id="alert-close" onclick="hideDemoAlert()">확인</button>
+    </div>
+  </div>
   <script>
+    // document.ready 
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('Document is ready with vanilla JavaScript!');
+      // 로그인 페이지 진입 시 세션 초기화
+      localStorage.setItem('access_token', '');
+      localStorage.setItem('refresh_token', '');
+      localStorage.setItem('token_type', 'bearer');
+
+      
+    });
+
+    function hideDemoAlert() {
+      document.getElementById('demo-alert-modal').style.display = 'none';
+    }
+
     // 엔터 키 이벤트
     document.getElementById("password").onkeypress = function (e) {
       if (!e) e = window.event;

@@ -7,7 +7,6 @@
   <title>Goal Tracker</title>
   <link rel="stylesheet" href="./css/default.css">
   <script type="text/javascript" src="./js/common.js"></script>
-  <script type="text/javascript" src="./js/profile/properties.local.js"></script>
   <style>
     .add-stamp-page {
       padding: 16px;
@@ -323,10 +322,6 @@
       <span>🏠</span>
       <span class="label">홈</span>
     </button>
-    <button class="nav-item" onclick="location.href='./statistics.html'">
-      <span>📊</span>
-      <span class="label">통계</span>
-    </button>
     <button class="nav-item" onclick="location.href='./setting.html'">
       <span>⚙️</span>
       <span class="label">설정</span>
@@ -467,6 +462,16 @@
       }
       if (!stampCount || isNaN(stampCount) || stampCount < 1 || stampCount > 100) {
         alert('유효한 개수를 입력해주세요 (1~100).');
+        return;
+      }
+
+      if(beforeImageId === undefined || beforeImageId === '') {
+        showAlert("달성 전 이미지를 선택해주세요.");
+        return;
+      }
+
+      if(afterImageId === undefined || afterImageId === '') {
+        showAlert("달성 후 이미지를 선택해주세요.");
         return;
       }
 
