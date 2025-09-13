@@ -34,15 +34,14 @@
       <div class="friend-count">
           <span class="friend-count-num">0</span>명
       </div>
-      <!-- 토글 버튼 -->
-      <div>
-        <span class="toggle-label" style="margin-right: 8px;">대기중 보기</span>
-        <label class="toggle-switch">
-          <input type="checkbox" id="filter-toggle">
-          <span class="slider"></span>
-        </label>
+      <!-- 친구 목록 상단에 버튼 3개 추가 -->
+      <div id="friend-list-filter" class="friend-list-filter">
+        <button class="friend-filter-btn active" data-status="ACCEPTED">전체 친구</button>
+        <button class="friend-filter-btn" data-status="RECEIVED">받은 요청</button>
+        <button class="friend-filter-btn" data-status="PENDING">보낸 요청</button>
       </div>
     </div>
+    
     <!-- 친구 수 텍스트 추가 [E] -->
     <!-- 친구 목록 [S] -->
     <div class="list">
@@ -53,7 +52,7 @@
     <div class="list empty" style="display:none;">
       <div class="empty-message">
         <span class="empty-icon">📄</span>
-        <span>개발중입니다. 유저 검색만 가능합니다.</span>
+        <span id="empty-span-message"></span>
       </div>
     </div>
     <!-- 친구 목록 [E] -->
@@ -80,6 +79,25 @@
   <script>
     const friendList = document.getElementById('friend-list');
     const searchList = document.getElementById('search-list');
+    const tabContainer = document.getElementById("friend-list-filter");
+
+    const messageObject = {
+      "ACCEPTED": {
+        "empty": "친구 목록이 없습니다.",
+        "delete_confirm": "친구 상태를 해제하시겠습니까?",
+        "status": "친구"
+      },
+      "RECEIVED": {
+        "empty": "받은 친구 요청이 없습니다.",
+        "delete_confirm": "친구 요청을 취소하시겠습니까?",
+        "status": "친구 요청 중"
+      },
+      "PENDING": {
+        "empty": "보낸 친구 요청이 없습니다.",
+        "delete_confirm": "친구 요청을 취소하시겠습니까?",
+        "status": "요청 대기 중"
+      },
+    }
 
     // document.ready 
     document.addEventListener('DOMContentLoaded', function () {
@@ -87,8 +105,18 @@
       callFriendList();
     });
 
+    // <script> 내부에 추가
+    document.querySelectorAll('.friend-filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.friend-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // status에 따라 친구 목록 불러오기
+        callFriendList();
+      });
+    });
+
     function callFriendList(){
-      const status = document.getElementById('filter-toggle').checked ? 'ALL' : 'PENDING';
+      const status = document.querySelector('.friend-filter-btn.active').dataset.status;
       apiFetch(`${ctx}/friend/list?status=${status}`, {
             method: 'GET',
         })
@@ -111,6 +139,7 @@
 
       const listContainer = document.querySelector(".list");
       const emptyContainer = document.querySelector(".list.empty");
+      const status = document.querySelector('.friend-filter-btn.active').dataset.status;
       document.querySelector(".friend-count-num").innerText = data.length;
 
       // 기존 목록 초기화
@@ -119,6 +148,7 @@
       if (!data || data.length === 0) {
         emptyContainer.style.display = "flex";
         listContainer.style.display = "none";
+        document.getElementById("empty-span-message").innerText = messageObject[status].empty;
         return;
       } else {
         emptyContainer.style.display = "none";
@@ -126,14 +156,25 @@
       }
 
       data.forEach(friend => {
-        const html = `
+        let html = `
           <div class="list-item">
             <div class="thumbnail"></div>
             <div class="info">
               <div class="title">${friend.friend_user_nm}</div>
             </div>
             <input type="hidden" name="user_id" value="${friend.friend_user_id}" />
-            <button class="close-btn" aria-label="삭제">×</button>
+            `
+        if(friend.friend_status === 'PENDING'){
+          html += `<span class="badge badge-pending">수락 대기중</span>
+            <button class="close-btn" aria-label="삭제">×</button>`;
+        }else if(friend.friend_status === 'RECEIVED'){
+          html += `<span class="badge badge-received">친구 요청</span>
+          <button class="accept-btn" aria-label="수락">&#10004;</button>
+          <button class="close-btn" aria-label="삭제">×</button>`;
+        }else if(friend.friend_status === 'ACCEPTED'){
+          html += `<button class="close-btn" aria-label="삭제">×</button>`;
+        }
+          html+=  `
           </div>
         `;
         friendList.insertAdjacentHTML('beforeend', html);
@@ -144,7 +185,7 @@
       // 닫기 버튼 클릭 시 친구 삭제 
       friendList.querySelectorAll('.close-btn').forEach(item => {
         item.addEventListener('click', function(e) {
-          showAlert("정말 삭제하시겠습니까?", () => {
+          showAlert(`${messageObject[status].delete_confirm}`, () => {
             apiFetch(`${ctx}/friend/delete`, {
                 method: 'DELETE',
                 body: JSON.stringify({
@@ -156,6 +197,25 @@
                 callFriendList();
             });
           });
+        });
+      });
+
+      // 수락 버튼 클릭 시 친구 수락
+      friendList.querySelectorAll('.accept-btn').forEach(item => {
+        item.addEventListener('click', function(e) {
+          apiFetch(`${ctx}/friend/status`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    friend_user_id: item.parentElement.querySelector('input[name="user_id"]').value,
+                    friend_status: 'ACCEPTED'
+                }),
+            }).then(data => {
+                console.log(data);
+                showAlert("친구 신청을 수락하였습니다!", () =>{
+                  hideAlert();
+                  callFriendList();
+                });
+            });
         });
       });
     }
@@ -181,7 +241,7 @@
             return;
         }
 
-        apiFetch(`${ctx}/user/list?query=${query}`, {
+        apiFetch(`${ctx}/friend/searchuser?query=${query}`, {
                 method: 'GET',
             })
             .then(data => {
@@ -208,6 +268,7 @@
       if (!data || data.length === 0) {
         emptyContainer.style.display = "flex";
         listContainer.style.display = "none";
+        document.getElementById("empty-span-message").innerText = "검색 결과가 없습니다.";
         return;
       } else {
         emptyContainer.style.display = "none";
@@ -217,16 +278,20 @@
       searchList.innerHTML = '';
 
       data.forEach(user => {
-        const html = `
+        let html = `
           <div class="list-item">
             <div class="thumbnail"></div>
             <div class="info">
               <div class="title">${user.user_nm}</div>
             </div>
-            <input type="hidden" name="user_id" value="${user.user_id}" />
-            <button class="accept-btn" aria-label="친구신청하기">+</button>
-          </div>
-        `;
+            <input type="hidden" name="user_id" value="${user.user_id}" />`;
+            
+        if(user.friend_status){
+          html += `<span class="badge badge-friend">${messageObject[user.friend_status].status}</span>`;
+        }else{
+          html += `<button class="accept-btn" aria-label="친구신청하기">+</button>`;
+        }
+        html += `</div>`;
         searchList.insertAdjacentHTML('beforeend', html);
         // const lastItem = listContainer.lastElementChild;
         // lastItem.querySelector(".thumbnail").style.backgroundImage = `url(${friend.image_url})`;
@@ -242,11 +307,14 @@
                 }),
             }).then(data => {
                 console.log(data);
-                hideAlert();
-                callFriendList();
+                showAlert("친구 신청을 전송하였습니다!", () =>{
+                  hideAlert();
+                  callFriendList();
+                });
             });
         });
       });
+
     }
 
     // 리스트 전환 (친구 목록 / 검색 목록)
@@ -254,9 +322,11 @@
         if(flag === 'friend'){
             friendList.style.display = 'block';
             searchList.style.display = 'none';
+            tabContainer.style.display = 'flex';
         } else if (flag === 'search'){
             friendList.style.display = 'none';
             searchList.style.display = 'block';
+            tabContainer.style.display = 'none';
         }
     }
 
