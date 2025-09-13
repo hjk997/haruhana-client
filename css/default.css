@@ -486,7 +486,29 @@
     /* 스탬프-목록없음 화면 [E] */
 
     /* 알림창 [S]*/
-    
+    .badge-notice {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      min-width: 18px;
+      height: 18px;
+      background: #ff3b3b;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      z-index: 2;
+    }
+    .header-right {
+      position: relative;
+    }
+    #notice-btn {
+      position: relative;
+    }
     
     /* 좋아요 버튼 */
     .like-btn {

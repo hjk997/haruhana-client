@@ -7,6 +7,31 @@ if(domainName.startsWith('localhost') || domainName.startsWith('127.0.0.1')) {
   ctx = 'https://haruhana-stamp.com';
 }
 
+// document.ready 
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('common.js: Document is ready with vanilla JavaScript!');
+  // 알림 정보 가져오기 
+  getNoticeInfo();
+});
+
+function getNoticeInfo() {
+  const badge = document.getElementById('notice-badge');
+  if(badge){
+    apiFetch(`${ctx}/notice/unread_count`,{
+        method: 'GET'
+      }
+    ).then(data => {
+        const count = data.count;
+        if (count > 0) {
+          badge.textContent = count > 99 ? '99+' : count;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      });
+  }
+}
+
 function showAlert(message, callbackFc = hideAlert) {
   const modal = document.getElementById("alert-modal");
   const msg = document.getElementById("alert-message");
