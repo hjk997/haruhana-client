@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goal Tracker</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="./css/default.css">
   <script type="text/javascript" src="./js/common.js"></script>
 </head>
@@ -57,7 +58,8 @@
     // document.ready 
     document.addEventListener('DOMContentLoaded', function () {
       console.log('Document is ready with vanilla JavaScript!');
-      callNoticeList()
+      callNoticeList();
+      readAllNotices();
     });
 
     function callNoticeList(){
@@ -95,27 +97,83 @@
       }
 
       data.forEach(notice => {
-        const html = `
-          <div class="list-item">
-            <div class="thumbnail"></div>
-            <div class="info">
-              <div class="title">${notice.notice_message}</div>
-            </div>
-            <button class="like-btn" aria-label="좋아요">&#10084;</button>
-            <button class="close-btn" aria-label="삭제">×</button>
-          </div>
-        `;
+        let html = `<div class="list-item" data-notice-id="${notice.notice_id}">`;
+        if(notice.notice_type === 'friend_request'){
+          html += `
+            <div class="thumbnail info-icon">ℹ️</div>
+              <div class="info">
+                <div class="title">${notice.notice_message}</div>
+              </div>
+              <button class="event-btn" data-goto="friend" aria-label="바로가기"><span class="material-icons">arrow_forward</span></button>
+              <button class="close-btn" aria-label="삭제"><span class="material-icons">close</span></button>
+          `;
+        } else if(notice.notice_type === 'friend_achieve'){
+          html += `
+            <div class="thumbnail achieve-icon">🏆</div>
+              <div class="info">
+                <div class="title">${notice.notice_message}</div>
+              </div>
+              <button class="event-btn" aria-label="좋아요"><span class="material-icons">thumb_up</span></button>
+              <button class="close-btn" aria-label="삭제"><span class="material-icons">close</span></button>
+          `;
+        } else{
+          html += `
+            <div class="thumbnail info-icon">ℹ️</div>
+              <div class="info">
+                <div class="title">${notice.notice_message}</div>
+              </div>
+              <button class="close-btn" aria-label="삭제"><span class="material-icons">close</span></button>
+          `;
+        }
+        html += `</div>`;
         listContainer.insertAdjacentHTML('beforeend', html);
         //const lastItem = listContainer.lastElementChild;
         //lastItem.querySelector(".thumbnail").style.backgroundImage = `url(${notice.image_url})`;
       });
     }
 
+    // 알림 별 버튼 클릭했을 시 이벤트 처리 
     document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('like-btn')) {
-        e.target.classList.toggle('liked');
+      const parent = e.target.parentElement;
+      if (parent.classList.contains('event-btn')) {
+        if(parent.dataset.goto === 'friend'){
+          location.href = './friend.html';
+          return;
+        }
+
+        parent.classList.toggle('clicked');
+      }else if (parent.classList.contains('close-btn')) {
+        apiFetch(`${ctx}/notice/`, {
+            method: 'DELETE',
+            body: JSON.stringify({
+              notice_id: parent.closest('.list-item').dataset.noticeId
+            })
+        }).then(data => {
+          console.log(data);
+          if(data && data.code === 200){
+            const listItem = parent.closest('.list-item');
+            listItem.remove();
+          } else {
+            showAlert("알림 삭제를 실패하였습니다.");
+            return;
+          }
+        })
       }
     });
+
+    // 알림 페이지 진입했을 때 모든 알림을 읽도록 처리 
+    function readAllNotices(){
+      apiFetch(`${ctx}/notice/read-all`, {
+            method: 'POST',
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(error => {
+          console.error('알림 읽기 실패! Error:', error);
+          return;
+        });
+    }
 
   </script>
 </body>
