@@ -5,240 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goal Tracker</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./css/default.css">
+  <link rel="stylesheet" href="./css/stamp.css">
   <script type="text/javascript" src="./js/common.js"></script>
-  <style>
-    .add-stamp-page {
-      padding: 16px;
-      margin-bottom: 60px;
-      /* 하단 네비게이션 공간 확보 */
-    }
-
-    .add-stamp-page h2 {
-      font-size: 1.5rem;
-      margin-bottom: 16px;
-    }
-
-    .form-item {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 16px;
-    }
-
-    .form-item label {
-      margin-bottom: 6px;
-      font-weight: 500;
-      color: #333;
-    }
-
-    .form-item input[type="text"],
-    .form-item input[type="number"],
-    .form-item input[type="file"],
-    .form-item input[type="button"] {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .form-item input[type="text"]:focus,
-    .form-item input[type="number"]:focus {
-      border-color: #ff7aa2;
-      box-shadow: 0 0 5px rgba(255, 122, 162, 0.3);
-    }
-
-    .form-item select {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.2s;
-      background: #fff;
-      margin-bottom: 0;
-    }
-
-    .form-item select:focus {
-      border-color: #ff7aa2;
-      box-shadow: 0 0 5px rgba(255, 122, 162, 0.3);
-    }
-
-    #add-stamp-btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background-color: #ff7aa2;
-      color: #fff;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    #add-stamp-btn:hover {
-      background-color: #ff6090;
-    }
-
-    /* 모달 배경 */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* 모달 콘텐츠 */
-    .modal-content {
-      background: #fff;
-      padding: 16px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      max-height: 80%;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .modal-header h3 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: #333;
-      flex: 1;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    /* 닫기 버튼 */
-    .close-btn {
-      margin-left: 12px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    /* 이미지 그리드 */
-    .image-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    /* 이미지 아이템 */
-    .image-item {
-      width: 100%;
-      padding-top: 100%;
-      /* 정사각형 유지 */
-      position: relative;
-      background: #f0f0f0;
-      border-radius: 8px;
-      border: 8px solid #f0f0f0;
-      overflow: hidden;
-      cursor: pointer;
-      margin: 2px;
-    }
-
-    .image-item img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    /* 업로드 버튼 스타일 */
-    .upload-item {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 12px;
-      color: #555;
-      background: #e0e0e0;
-      font-weight: bold;
-    }
-
-    /* 모달 버튼(헤더) 스타일 [S]*/
-    .modal-btn {
-      padding: 6px 14px;
-      border: none; 
-      border-radius: 6px;
-      background: #ffffff;
-      color: #333;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .modal-btn:hover {
-      background: #ff7aa2;
-      color: #fff;
-    }
-    /* 모달 버튼(헤더) 스타일 [E]*/
-
-    .desc-textarea {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.2s;
-      resize: none;
-      font-family: inherit;
-    }
-
-    .desc-textarea:focus {
-      border-color: #ff7aa2;
-      box-shadow: 0 0 5px rgba(255, 122, 162, 0.3);
-    }
-
-    /* 로딩바 [S] */
-    .image-grid-loading {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100px;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #eee;
-      border-top: 4px solid #ff7aa2;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    /* 로딩바 [E] */
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 </head>
 
 <body>
@@ -303,15 +75,24 @@
       <div class="modal-header">
         <h3>이미지 선택</h3>
         <div class="modal-actions">
-          <button type="button" id="modal-add-btn" class="modal-btn" title="추가" aria-label="추가">➕</button>
-          <button type="button" id="modal-delete-btn" class="modal-btn" title="삭제" aria-label="삭제">🗑️</button>
-          <button type="button" id="modal-close-btn" class="modal-btn" title="닫기" aria-label="닫기">❌</button>
+          <button id="modal-close-btn" class="close-btn" title="닫기"><span class="material-icons">close</span></button>
         </div>
       </div>
       <div class="image-grid" style="display:none;">
       </div>
+      <div class="cropper-grid" style="display:none;">
+      </div>
       <div class="image-grid-loading">
         <div class="spinner"></div>
+      </div>
+      <div class="modal-footer">
+        <div style="font-size:12px; color:#666; text-align:center; margin:12px auto;">이미지는 1MB 이하로 등록해주세요.</div>
+        <div class="modal-actions">
+          <button id="modal-add-btn" class="modal-action-btn" title="업로드">새 이미지 업로드</button>
+          <button id="modal-delete-btn" class="modal-action-btn" title="삭제">삭제</button>
+          <button id="modal-cancel-btn" class="modal-action-btn" title="취소">취소</button>
+          <button id="modal-select-btn" class="modal-action-btn" title="선택 완료">선택 완료</button>
+        </div>
       </div>
     </div>
   </div>
@@ -335,6 +116,7 @@
     </div>
   </div>
   <script>
+    let cropper;
     const modal = document.getElementById("image-modal");
     const openBeforeBtn = document.getElementById("open-before-image-modal");
     const openAfterBtn = document.getElementById("open-after-image-modal");
@@ -378,15 +160,79 @@
       fileInput.click();
     }
 
-    // 선택한 이미지 s3에 바로 업로드 
+    // 이미지 편집창 표시 
     function onChangeFile(e, imageType){
-        const file = e.target.files[0];
+      const file = e.target.files[0];
+      if (!file) return;
 
+      const imageGrid = document.querySelector(".image-grid");
+      const cropperGrid = document.querySelector(".cropper-grid");
+      imageGrid.style.display = "none";
+      cropperGrid.style.display = "block";
+
+      cropperGrid.innerHTML = ''; // 기존 내용 초기화
+      cropperGrid.style.display = "grid";
+
+      document.getElementById('modal-add-btn').style.display = "none";
+      document.getElementById('modal-delete-btn').style.display = "none";
+      document.getElementById('modal-cancel-btn').style.display = "inline-block";
+      document.getElementById('modal-select-btn').style.display = "inline-block";
+
+      // 이미지 객체 추가 
+      const image = document.createElement("img");
+      cropperGrid.appendChild(image);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        image.src = e.target.result;
+
+        // 기존 cropper 있으면 제거
+        if (cropper) cropper.destroy();
+
+        // Cropper.js 적용
+        cropper = new Cropper(image, {
+          aspectRatio: 1, // 정사각형 자르기
+          viewMode: 1
+        });
+      };
+      reader.readAsDataURL(file);
+
+      // 취소 버튼 클릭 시 
+      document.getElementById('modal-cancel-btn').onclick = () => {
+        cropperGrid.style.display = "none";
+        imageGrid.style.display = "grid";
+
+        document.getElementById('modal-add-btn').style.display = "block";
+        document.getElementById('modal-delete-btn').style.display = "none";
+        document.getElementById('modal-cancel-btn').style.display = "none";
+        document.getElementById('modal-select-btn').style.display = "none";
+      };
+
+      // 선택 버튼 클릭 시 
+      document.getElementById('modal-select-btn').onclick = () => {
+        if(!cropper){
+          showAlert('이미지가 로드되지 않았습니다. 다시 시도해주세요.');
+          return;
+        }
+        // Cropper.js에서 이미지 자르기
+        cropper.getCroppedCanvas().toBlob((blob) => {
+          if (blob) {
+            const newFile = new File([blob], file.name, { type: file.type });
+            uploadImageToS3(newFile, imageType);
+          }
+        });
+      };
+    }
+
+    // 선택한 이미지 s3에 바로 업로드 
+    function uploadImageToS3(file, imageType){
         const formData = new FormData();
         formData.append("file", file);
         formData.append("is_public", false);
         formData.append("image_type", imageType);
         
+        document.querySelector(".cropper-grid").innerHTML = "";
+        document.querySelector(".cropper-grid").style.display = "none";
         document.querySelector(".image-grid-loading").style.display = "grid";
         document.querySelector(".image-grid").style.display = "none";
 
@@ -406,6 +252,11 @@
 
     // 모달에 이미지 표시
     function reloadImageGrid(imageType){
+      document.getElementById('modal-add-btn').style.display = "inline-block";
+      document.getElementById('modal-delete-btn').style.display = "none";
+      document.getElementById('modal-cancel-btn').style.display = "none";
+      document.getElementById('modal-select-btn').style.display = "none";
+
       const imageGrid = document.querySelector(".image-grid");
       imageGrid.style.display = "grid";
       imageGrid.innerHTML = ""; // 기존 내용 초기화
@@ -416,8 +267,58 @@
           data.forEach(img => {
             const imgItem = document.createElement("div");
             imgItem.classList.add("image-item");
-            imgItem.innerHTML = `<img src="${img.image_key}" alt="" onclick="selectFile(this, '${imageType}', '${img.image_id}')">`;
+            imgItem.innerHTML = `<img src="${img.image_key}" data-image-public='${img.is_public}' data-image-type="${imageType}" data-image-id="${img.image_id}" alt="">`;
             imageGrid.appendChild(imgItem);
+          });
+
+          imageGrid.querySelectorAll('.image-item img').forEach(img => {
+            img.addEventListener('click', () => {
+              if(img.parentElement.classList.contains('selected')){
+                img.parentElement.classList.remove('selected');
+                document.getElementById('modal-select-btn').style.display = "none";
+                document.getElementById('modal-delete-btn').style.display = "none";
+                document.getElementById('modal-add-btn').style.display = "block";
+                return;
+              }
+
+              // 선택된 이미지 강조 표시
+              imageGrid.querySelectorAll('.image-item').forEach(item => {
+                item.classList.remove('selected');
+              });
+              img.parentElement.classList.toggle('selected');
+
+              // 선택 및 삭제 버튼 표시
+              document.getElementById('modal-add-btn').style.display = "none";
+
+              if(img.dataset.imagePublic === 'false'){
+                document.getElementById('modal-delete-btn').style.display = "inline-block";
+              }
+              document.getElementById('modal-select-btn').style.display = "inline-block";
+
+              // 선택 버튼 클릭 시
+              document.getElementById('modal-select-btn').onclick = () => {
+                selectFile(img, imageType, img.dataset.imageId);
+              };
+
+              // 삭제 버튼 클릭 시
+              document.getElementById('modal-delete-btn').onclick = () => {
+                if (confirm('정말로 이 이미지를 삭제하시겠습니까?')) {
+                  apiFetch(`${ctx}/stamp-image/`, {
+                    method: 'DELETE',
+                    body: JSON.stringify({
+                      image_id: img.dataset.imageId
+                    })
+                  }).then(data => {
+                    if (data && data.code === 200) {
+                      showAlert('이미지가 성공적으로 삭제되었습니다.');
+                      reloadImageGrid(imageType);
+                    } else {
+                      showAlert('이미지 삭제에 실패했습니다. 다시 시도해주세요.');
+                    }
+                  });
+                }
+              };
+            });
           });
         })
         .catch(error => {

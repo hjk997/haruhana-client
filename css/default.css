@@ -506,6 +506,15 @@
     .header-right {
       position: relative;
     }
+    .header-right .material-icons,
+    .header-right span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      font-size: 1.4rem;
+    }
     #notice-btn {
       position: relative;
     }
@@ -527,8 +536,6 @@
       color: #ff7aa2;
     }
 
-    /* 바로가기 버튼 */
-    
     .close-btn {
       background: none;
       border: none;
