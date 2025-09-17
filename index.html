@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goal Tracker</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="./css/default.css">
   <script type="text/javascript" src="./js/common.js"></script>
 </head>
@@ -15,10 +16,10 @@
   <header>
     <div class="header-left">Goal Tracker</div>
     <div class="header-right">
-      <button id="add-btn" onclick="location.href='./add.html'">➕</button>
-      <button id="friend-btn" onclick="location.href='./friend.html'">👥</button>
+      <button id="add-btn" onclick="location.href='./add.html'"><span class="material-icons">add</span></button>
+      <button id="friend-btn" onclick="location.href='./friend.html'"><span class="material-icons">group</span></button>
       <button id="notice-btn" onclick="location.href='./notice.html'">
-        🔔
+        <span class="material-icons">notifications</span>
         <span id="notice-badge" class="badge-notice" style="display:none;"></span>
       </button>
     </div>
@@ -44,6 +45,15 @@
       </div>
     </div>
   </div>
+  
+  <!-- body 하단에 추가 -->
+  <div id="bottom-sheet" class="bottom-sheet" style="display:none;">
+    <div class="sheet-content">
+      <button class="sheet-btn" data-action="edit">편집</button>
+      <button class="sheet-btn" data-action="delete">삭제</button>
+      <button class="sheet-btn sheet-cancel" data-action="cancel">취소</button>
+    </div>
+  </div>
 
   <!-- 하단 네비게이션 -->
   <nav class="bottom-nav">
@@ -61,6 +71,14 @@
     <div class="alert-content">
         <p id="alert-message">비밀번호가 틀렸습니다.</p>
         <button id="alert-close" onclick="hideAlert()">확인</button>
+    </div>
+  </div>
+  
+  <div class="alert-modal" id="confirm-modal" style="display:none;">
+    <div class="alert-content">
+        <p id="confirm-message">정말 삭제하시겠습니까?</p>
+        <button id="confirm-yes">확인</button>
+        <button id="confirm-cancel" onclick="hideConfirm()">취소</button>
     </div>
   </div>
   <script>
@@ -108,6 +126,14 @@
 
       data.forEach(stamp => {
         const percent = Math.floor(stamp.progress_cnt / stamp.total_cnt * 100);
+        let stampType;
+        if(stamp.stamp_type === 'basic'){
+          stampType = '차근차근 꾸준히';
+        } else if(stamp.stamp_type === 'routine'){
+          stampType = '매일매일 하나씩';
+        } else {
+          stampType = '???';
+        }
         const html = `
           <div class="list-item">
             <div class="thumbnail"></div>
@@ -117,13 +143,11 @@
                 <div class="progress-bar" style="width: ${percent}%;"></div>
                 <span class="progress-text">${stamp.progress_cnt}/${stamp.total_cnt}</span>
               </div>
+              <div class="tag-list">
+                <span class="tag">${stampType}</span>
+              </div>
             </div>
-            <button class="menu-btn" style="display:none;">⋮</button>
-            <div class="dropdown">
-              <button>편집</button>
-              <button>삭제</button>
-              <button>공유</button>
-            </div>
+            <button class="menu-btn">⋮</button>
           </div>
         `;
         listContainer.insertAdjacentHTML('beforeend', html);
@@ -140,43 +164,70 @@
           location.href = `./detail.html?stamp_id=${stamp.stamp_id}`;
         });
       });
-      /*
-      // 스탬프 목록에 있는 드롭다운 메뉴 토글 
+
+      // 스탬프 목록에 있는 바텀시트 메뉴 토글
       document.querySelectorAll(".menu-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
-          e.stopPropagation(); // 부모로 이벤트 전파 방지
+          e.stopPropagation();
           const item = e.target.closest(".list-item");
-          const dropdown = item.querySelector(".dropdown");
-
-          // 다른 드롭다운 닫기
-          document.querySelectorAll(".list-item").forEach(i => {
-            if (i !== item) i.classList.remove("show");
-          });
-
-          // 현재 토글
-          item.classList.toggle("show");
-
-          if (item.classList.contains("show")) {
-            // 위치 계산
-            const rect = dropdown.getBoundingClientRect();
-            if (rect.bottom > window.innerHeight) {
-              dropdown.style.top = "auto";
-              dropdown.style.bottom = "100%"; // 위로 열림
-            } else {
-              dropdown.style.top = "100%";
-              dropdown.style.bottom = "auto"; // 아래로 열림
-            }
-          }
+          item.classList.add("active-menu");
+          document.getElementById("bottom-sheet").style.display = "flex";
+          // 선택된 아이템을 기억(예: data-index 등)
+          document.getElementById("bottom-sheet").dataset.index = Array.from(item.parentNode.children).indexOf(item);
         });
       });
 
-      // 바깥 클릭 시 닫기
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".list-item")) {
-          document.querySelectorAll(".list-item").forEach(i => i.classList.remove("show"));
+      // 바텀시트 버튼 클릭 이벤트
+      document.querySelectorAll('.sheet-btn').forEach(btn => {
+        btn.onclick = function() {
+          const action = this.dataset.action;
+          const sheet = document.getElementById("bottom-sheet");
+          const idx = sheet.dataset.index;
+          sheet.style.display = "none";
+          document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active-menu'));
+          if(action === 'cancel') {
+            return;
+          } else if(action === 'edit'){
+            const stamp = data[idx];
+            location.href = `./add.html?stamp_id=${stamp.stamp_id}`;
+          } else if(action === 'delete'){
+            const stamp = data[idx];
+            confirm("정말 삭제하시겠습니까?", () =>{
+              hideConfirm();
+              apiFetch(`${ctx}/stamp`, {
+                method: 'DELETE',
+                body: JSON.stringify({
+                  stamp_id: stamp.stamp_id
+                })
+              })
+              .then(res => {
+                if(res.code === 200){
+                  showAlert("삭제되었습니다.", () => {
+                    callStampList();
+                    hideAlert();
+                  });
+                }else{
+                  showAlert("삭제에 실패하였습니다. 다시 시도해주세요.");
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                showAlert("삭제에 실패하였습니다. 다시 시도해주세요.");
+                return;
+              });
+            });
+          }
         }
       });
-      */
+
+      // 바깥 클릭 시 바텀시트 닫기
+      document.getElementById("bottom-sheet").addEventListener("click", function(e){
+        if(e.target === this){
+          this.style.display = "none";
+          document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active-menu'));
+        }
+      });
+      
     }
 
     document.getElementById("filter-toggle").onchange = function() {
