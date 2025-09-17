@@ -41,8 +41,22 @@ function showAlert(message, callbackFc = hideAlert) {
   closeBtn.onclick = callbackFc;
 }
 
+function confirm(message, onConfirm) {
+  const modal = document.getElementById("confirm-modal");
+  const msg = document.getElementById("confirm-message");
+  const confirmBtn = document.getElementById("confirm-yes");
+  msg.textContent = message;
+  modal.style.display = "flex";
+  confirmBtn.onclick = onConfirm;
+}
+
 function hideAlert() {
   const modal = document.getElementById("alert-modal");
+  modal.style.display = "none";
+}
+
+function hideConfirm() {
+  const modal = document.getElementById("confirm-modal");
   modal.style.display = "none";
 }
 
